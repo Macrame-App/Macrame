@@ -25,6 +25,7 @@ const classString = computed(() => {
     'bg-sky-500/80 hover:bg-sky-400 text-white border-sky-400': props.variant === 'primary',
     'bg-white/80 hover:bg-white text-slate-900 border-white': props.variant === 'secondary',
     'bg-red-700/80 hover:bg-red-700 text-white border-red-800': props.variant === 'danger',
+    'bg-slate-700/80 hover:bg-slate-700 text-white border-slate-600': props.variant === 'dark',
     'bg-lime-500/80 hover:bg-lime-500 text-white border-lime-600': props.variant === 'success',
     'button__subtle bg-transparent hover:bg-white/10 text-white border-transparent':
       props.variant === 'subtle',
@@ -37,10 +38,6 @@ const classString = computed(() => {
   return Object.keys(classes)
     .filter((key) => classes[key])
     .join(' ')
-})
-
-onMounted(() => {
-  console.log(classString)
 })
 </script>
 
