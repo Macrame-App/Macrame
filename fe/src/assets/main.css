@@ -1,3 +1,4 @@
+@import './_macro';
 @import 'tailwindcss';
 
 @variant dark (&:where(.dark, .dark *));
@@ -53,4 +54,31 @@ h5 {
   rounded-xl
   border
   border-white/15;
+}
+
+input {
+  @apply w-full 
+  px-2 py-1
+  border
+  border-slate-400
+  text-white
+  rounded-md
+  bg-black/20;
+}
+
+:has(> input + span) {
+  @apply flex;
+
+  input {
+    @apply rounded-r-none;
+  }
+
+  span {
+    @apply flex
+    items-center
+    px-2
+    rounded-r-md
+    text-white
+    bg-slate-400;
+  }
 }

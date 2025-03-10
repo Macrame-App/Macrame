@@ -1,0 +1,32 @@
+/* @reference "main"; */
+hr.spacer {
+  @apply relative
+  w-6
+  border 
+  border-gray-300
+  opacity-80
+  overflow-visible;
+
+  &::before,
+  &::after {
+    @apply content-['']
+    absolute
+    top-1/2
+    -translate-y-1/2
+    size-2
+    bg-gray-300
+    rounded-full;
+  }
+
+  &::before {
+    @apply -left-1;
+  }
+
+  &::after {
+    @apply -right-1;
+  }
+
+  &:last-of-type {
+    @apply hidden;
+  }
+}
