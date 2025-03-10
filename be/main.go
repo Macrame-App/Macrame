@@ -9,29 +9,25 @@ import (
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// log.Println(r.URL.Path)
 
-		file := "../public" + r.URL.Path
+		file := "../public" // base directory
 
 		if r.URL.Path == "/" {
-			file = "../public/index.html"
-			// } else if strings.HasSuffix(r.URL.Path, ".js") {
-			// 	log.Println("js")
-			// 	w.Header().Set("Content-Type", "application/javascript")
-			// } else if strings.HasSuffix(r.URL.Path, ".css") {
-			// 	log.Println("css")
-			// 	w.Header().Set("Content-Type", "text/css")
-			// }
+			file = file + "/index.html" // default
 		} else {
-			contentType := mime.TypeByExtension(filepath.Ext(file))
-			if contentType != "" {
-				w.Header().Set("Content-Type", contentType)
-			}
+			file = file + r.URL.Path // request
+		}
+
+		contentType := mime.TypeByExtension(filepath.Ext(file)) // get content type
+
+		if contentType != "" {
+			w.Header().Set("Content-Type", contentType) // set content type header
 		}
 
 		log.Println(file)
 		log.Println("-------------")
-		http.ServeFile(w, r, file)
+
+		http.ServeFile(w, r, file) // serve file
 	})
 
 	log.Fatal(http.ListenAndServe(":6970", nil))
