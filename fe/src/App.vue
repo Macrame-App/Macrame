@@ -1,7 +1,7 @@
 <template>
   <div class="app-background">
-    <img src="./assets/bg-gradient.svg" aria-hidden="true" />
-    <img src="@/assets/Macrame-Logo-white.svg" class="logo" aria-hidden="true" />
+    <img src="./assets/img/bg-gradient.svg" aria-hidden="true" />
+    <img src="@/assets/img/Macrame-Logo-white.svg" class="logo" aria-hidden="true" />
   </div>
   <MainMenu />
   <RouterView />

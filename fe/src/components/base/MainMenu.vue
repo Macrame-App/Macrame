@@ -1,7 +1,7 @@
 <template>
   <nav id="main-menu">
     <button id="menu-toggle" :class="menuOpen ? 'open' : ''" @click="menuOpen = !menuOpen">
-      <img class="logo" src="@/assets/Macrame-Logo-gradient.svg" aria-hidden="true" />
+      <img class="logo" src="@/assets/img/Macrame-Logo-gradient.svg" aria-hidden="true" />
       <IconX :class="{ 'opacity-0': !menuOpen }" />
     </button>
     <ul :class="menuOpen ? 'open' : ''">

@@ -1,6 +1,6 @@
-@import './_macro';
-@import './_mcrm-block';
-@import './_panel';
+@import './style/_macro';
+@import './style/_mcrm-block';
+@import './style/_panel';
 
 @import 'tailwindcss';
 
