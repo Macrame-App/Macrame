@@ -1,0 +1,40 @@
+.panel {
+  @apply grid 
+  grid-rows-[auto_1fr]
+  fixed
+  top-2
+  left-4 sm:left-16
+  right-4 sm:right-16
+  bottom-2
+  overflow-hidden;
+
+  > .panel__header,
+  > .panel__title {
+    @apply px-4 py-2;
+
+    /* &:first-child {
+      @apply pt-4;
+    }
+
+    &:last-child {
+      @apply pb-4;
+    } */
+  }
+
+  .panel__title {
+    @apply bg-gradient-to-r
+    w-fit
+    from-amber-300
+    to-white/50
+    pt-3
+    pl-16 sm:pl-4
+    bg-clip-text
+    text-transparent;
+  }
+
+  .panel__content {
+    @apply grid
+    pt-4 sm:pt-0
+    pl-0 sm:pl-4;
+  }
+}

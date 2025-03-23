@@ -1,21 +1,28 @@
 @import './_macro';
+@import './_mcrm-block';
+@import './_panel';
+
 @import 'tailwindcss';
 
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Anaheim', sans-serif;
+  --font-sans: 'Roboto', sans-serif;
+  --font-mono: 'Fira Code', monospace;
 }
 
 body {
-  @apply font-sans 
+  @apply font-sans
+  font-light
+  tracking-wide
   bg-slate-900
   text-slate-50;
 }
 
 h1,
 h2 {
-  @apply font-bold;
+  @apply font-mono
+  font-bold;
 }
 
 h3,
@@ -45,17 +52,6 @@ h5 {
   @apply text-lg;
 }
 
-.panel {
-  @apply fixed
-  inset-16
-  p-4
-  bg-white/10
-  backdrop-blur-sm
-  rounded-xl
-  border
-  border-white/15;
-}
-
 input {
   @apply w-full 
   px-2 py-1
@@ -81,4 +77,9 @@ input {
     text-white
     bg-slate-400;
   }
+}
+
+ul {
+  @apply list-disc
+  list-inside;
 }
