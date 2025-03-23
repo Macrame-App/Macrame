@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"be/app"
-	"be/app/helper"
 )
 
 func main() {
@@ -21,7 +20,7 @@ func main() {
 
 	})
 
-	helper.OpenBrowser("http://localhost:6970")
+	// helper.OpenBrowser("http://localhost:6970")
 
 	log.Fatal(http.ListenAndServe(":6970", nil))
 }

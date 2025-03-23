@@ -63,5 +63,12 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 		PlayMacro(w, r)
 	case "/device/list":
 		DeviceList(w, r)
+	case "/device/access/check":
+		DeviceAccessCheck(w, r)
+	case "/device/access/request":
+		DeviceAccessRequest(w, r)
+	case "/poll/remote":
+		PollRemote(w, r)
+
 	}
 }

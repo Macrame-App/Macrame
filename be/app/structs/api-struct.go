@@ -13,10 +13,13 @@ var Endpoints = Allowed{
 		"/macro/delete",
 		"/macro/play",
 		"/device/list",
+		"/device/access/check",
+		"/device/access/request",
 	},
 	Remote: []string{
 		"/macro/list",
-		"/device/access",
+		"/device/access/check",
+		"/device/access/request",
 		"/device/auth",
 	},
 	Auth: []string{

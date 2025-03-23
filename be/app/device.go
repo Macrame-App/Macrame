@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 func DeviceList(w http.ResponseWriter, r *http.Request) {
@@ -60,8 +61,34 @@ func readDeviceSettings(filepath string) (settings structs.Settings) {
 	return settings
 }
 
-func DeviceAccess(w http.ResponseWriter, r *http.Request) bool {
-	return true
+var (
+	mu    sync.Mutex
+	queue = make(map[string][]structs.RemoteWebhook)
+)
+
+func PollRemote(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func DeviceAccessCheck(w http.ResponseWriter, r *http.Request) {
+	log.Println("device access check")
+}
+
+func DeviceAccessRequest(w http.ResponseWriter, r *http.Request) {
+	var req structs.RemoteWebhook
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	log.Println(req)
+	// mu.Lock()
+	// queue[req.Device] = append(queue[req.Device], req)
+	// mu.Unlock()
+
 }
 
 func DeviceAuth(w http.ResponseWriter, r *http.Request) bool {
