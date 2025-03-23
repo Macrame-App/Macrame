@@ -2,33 +2,26 @@ package main
 
 import (
 	"log"
-	"mime"
 	"net/http"
-	"path/filepath"
+
+	"be/app"
+	"be/app/helper"
 )
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
-		file := "../public" // base directory
+		app.ApiCORS(w, r)
 
-		if r.URL.Path == "/" {
-			file = file + "/index.html" // default
-		} else {
-			file = file + r.URL.Path // request
+		if r.Method == "GET" {
+			app.ApiGet(w, r)
+		} else if r.Method == "POST" {
+			app.ApiPost(w, r)
 		}
 
-		contentType := mime.TypeByExtension(filepath.Ext(file)) // get content type
-
-		if contentType != "" {
-			w.Header().Set("Content-Type", contentType) // set content type header
-		}
-
-		log.Println(file)
-		log.Println("-------------")
-
-		http.ServeFile(w, r, file) // serve file
 	})
+
+	helper.OpenBrowser("http://localhost:6970")
 
 	log.Fatal(http.ListenAndServe(":6970", nil))
 }
