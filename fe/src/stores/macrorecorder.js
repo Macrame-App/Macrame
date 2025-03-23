@@ -1,7 +1,9 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import { filterKey, isRepeat } from '../services/MacroRecordService'
+import { filterKey, isRepeat, invalidMacro } from '../services/MacroRecordService'
+import axios from 'axios'
+import { appUrl } from '@/services/ApiService'
 
 export const useMacroRecorderStore = defineStore('macrorecorder', () => {
   // Properties - State values
@@ -10,7 +12,10 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     edit: false,
     editKey: false,
     editDelay: false,
+    validationErrors: false,
   })
+
+  const macroName = ref('')
 
   const steps = ref([])
 
@@ -30,7 +35,11 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
 
     if (steps.value[keyIndex]) returnVal = steps.value[keyIndex]
     if (delayIndex && steps.value[delayIndex])
-      returnVal = { delay: steps.value[delayIndex], key: steps.value[keyIndex] }
+      returnVal = {
+        delay: steps.value[delayIndex],
+        key: steps.value[keyIndex],
+        delayIndex: delayIndex,
+      }
 
     return returnVal
   }
@@ -76,13 +85,52 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     }
   }
 
+  const insertKey = (e, direction, adjacentDelayIndex) => {
+    let min, max, newKeyIndex, newDelayIndex
+
+    if (adjacentDelayIndex === null) {
+      min = state.value.editKey == 0 ? 0 : state.value.editKey
+      max = state.value.editKey == 0 ? 1 : false
+
+      newKeyIndex = max === false ? min + 2 : min
+      newDelayIndex = min + 1
+    } else if (state.value.editKey < adjacentDelayIndex) {
+      min = state.value.editKey
+      max = adjacentDelayIndex
+      newKeyIndex = min + 2
+      newDelayIndex = min + 1
+    } else {
+      min = adjacentDelayIndex
+      max = state.value.editKey
+      newKeyIndex = min + 1
+      newDelayIndex = min + 2
+    }
+
+    if (max !== false) {
+      for (let i = Object.keys(steps.value).length - 1; i >= max; i--) {
+        steps.value[i + 2] = steps.value[i]
+      }
+    }
+
+    recordStep(e, direction, newKeyIndex)
+    recordStep(10, false, newDelayIndex)
+
+    state.value.editKey = false
+  }
+
   const deleteEditKey = () => {
-    steps.value.splice(state.value.editKey, 2)
+    if (state.value.editKey === 0) steps.value.splice(state.value.editKey, 2)
+    else steps.value.splice(state.value.editKey - 1, 2)
     state.value.editKey = false
   }
 
   const restartDelay = () => {
     delay.value.start = performance.now()
+  }
+
+  const changeName = (name) => {
+    macroName.value = name
+    console.log(macroName.value)
   }
 
   const changeDelay = (fixed) => {
@@ -118,9 +166,23 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
 
   const reset = () => {
     state.value.record = false
+    delay.value.start = 0
     steps.value = []
 
     if (state.value.edit) resetEdit()
+  }
+
+  const save = () => {
+    state.value.validationErrors = invalidMacro(steps.value)
+
+    if (state.value.validationErrors) return false
+
+    axios
+      .post(appUrl() + '/macro/record', { name: macroName.value, steps: steps.value })
+      .then((data) => {
+        console.log(data)
+      })
+    return true
   }
 
   return {
@@ -131,11 +193,14 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     getAdjacentKey,
     getEditDelay,
     recordStep,
+    insertKey,
     deleteEditKey,
     restartDelay,
+    changeName,
     changeDelay,
     toggleEdit,
     resetEdit,
     reset,
+    save,
   }
 })

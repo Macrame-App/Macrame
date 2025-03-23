@@ -60,7 +60,7 @@ export const filterKey = (e) => {
   if (e.location === 1) k.loc = 'left'
   if (e.location === 2) k.loc = 'right'
   if (e.location === 3) k.loc = 'num'
-  
+
   if (e.key.includes('Media') || e.key.includes('Audio')) k.loc = mediaPrefix(e)
 
   // If code is in keyMap, set str by code
@@ -103,4 +103,25 @@ export const isRepeat = (lastStep, e, direction) => {
     lastStep.code === e.code &&
     lastStep.direction === direction
   )
+}
+
+export const invalidMacro = (steps) => {
+  const downKeys = []
+  const upKeys = []
+
+  Object.keys(steps).forEach((stepKey) => {
+    const step = steps[stepKey]
+
+    if (step.type !== 'key') return
+
+    if (step.direction == 'down') downKeys.push(step.key)
+    if (step.direction == 'up') {
+      if (!downKeys.includes(step.key)) upKeys.push(step.key)
+      else downKeys.splice(downKeys.indexOf(step.key), 1)
+    }
+  })
+
+  if (upKeys.length === 0 && downKeys.length === 0) return false
+
+  return { down: downKeys, up: upKeys }
 }
