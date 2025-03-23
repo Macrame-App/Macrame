@@ -83,3 +83,7 @@ ul {
   @apply list-disc
   list-inside;
 }
+
+strong {
+  @apply font-bold;
+}
