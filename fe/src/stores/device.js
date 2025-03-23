@@ -6,15 +6,14 @@ import { v4 as uuidv4 } from 'uuid'
 
 export const useDeviceStore = defineStore('device', () => {
   // Properties - State values
-  const list = ref({
-    remote: [],
-    local: [],
-  })
   const current = ref({
     uuid: false,
   })
+
   const remote = ref([])
-  const server = ref([])
+  const server = ref({
+    status: false,
+  })
 
   const uuid = () => {
     if (!current.value.uuid && localStorage.getItem('deviceId')) {
@@ -32,26 +31,31 @@ export const useDeviceStore = defineStore('device', () => {
   }
 
   const getRemoteDevices = async () => {
+    // remote.value = { penis: 'penis' }
+    // return
     axios.post(appUrl() + '/device/list').then((data) => {
       if (data.data.devices) remote.value = data.data.devices
     })
   }
 
-  const checkServerAccess = () => {
-    axios.post(appUrl() + '/device/access/check', { uuid: uuid() }).then((data) => {
-      console.log(data)
+  const checkServerAccess = async () => {
+    const check = await axios.post(appUrl() + '/device/access/check', { uuid: uuid() })
+    server.value.access = check.data
+    return check.data
+  }
 
-      // if (data.data.access) server.value = data.data
-    })
+  const requestServerAccess = async () => {
+    const request = await axios.post(appUrl() + '/device/access/request', { uuid: uuid() })
+    return request
   }
 
   return {
-    list,
     remote,
     server,
     uuid,
     setDeviceId,
     getRemoteDevices,
     checkServerAccess,
+    requestServerAccess,
   }
 })

@@ -1,6 +1,11 @@
 <template>
   <div class="device-overview">
-    <AlertComp type="info"> This is the server. </AlertComp>
+    <AlertComp type="info">
+      <div class="grid">
+        <strong>This is a server.</strong>
+        <em>UUID: {{ device.uuid() }} </em>
+      </div>
+    </AlertComp>
 
     <div class="mcrm-block block__light flex flex-wrap items-start">
       <!-- {{ remote.devices }} -->
@@ -53,8 +58,8 @@ const remote = reactive({ devices: [] })
 onMounted(() => {
   device.getRemoteDevices()
 
-  device.$subscribe((mutation) => {
-    if (mutation.events.key == 'remote') remote.devices = device.remote
+  device.$subscribe((mutation, state) => {
+    if (Object.keys(state.remote).length) remote.devices = device.remote
   })
 })
 </script>

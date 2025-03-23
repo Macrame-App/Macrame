@@ -4,15 +4,15 @@
       Devices <span class="text-sm">{{ isLocal() ? 'remote' : 'servers' }}</span>
     </h1>
     <div class="panel__content">
-      <DeviceOverview v-if="!isLocal()" />
-      <ServerOverview v-else />
+      <ServerView v-if="!isLocal()" />
+      <RemoteView v-else />
     </div>
   </div>
 </template>
 
 <script setup>
-import DeviceOverview from '@/components/devices/DeviceOverview.vue'
-import ServerOverview from '@/components/devices/ServerOverview.vue'
+import ServerView from '@/components/devices/ServerView.vue'
+import RemoteView from '@/components/devices/RemoteView.vue'
 import { isLocal } from '@/services/ApiService'
 </script>
 
