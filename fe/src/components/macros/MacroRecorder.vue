@@ -1,45 +1,25 @@
 <template>
-  <div class="macro-recorder">
-    <!-- Recorder buttons -->
-    <RecorderHeader />
+  <div class="macro-recorder mcrm-block block__light">
+    <div class="recorder-interface">
+      <!-- Recorder buttons -->
+      <RecorderHeader />
 
-    <!-- Recorder interface container -->
-    <div
-      :class="`recorder-interface__container ${macroRecorder.state.record && 'record'} ${macroRecorder.state.edit && 'edit'}`"
-    >
-      <!-- Shows the macro steps as kbd elements with delay and spacers-->
-      <RecorderOutput />
-      <!-- Input for recording macro steps -->
-      <RecorderInput />
+      <!-- Recorder interface container -->
+      <div
+        :class="`recorder-interface__container ${macroRecorder.state.record && 'record'} ${macroRecorder.state.edit && 'edit'}`"
+      >
+        <!-- Shows the macro steps as kbd elements with delay and spacers-->
+        <RecorderOutput />
+        <!-- Input for recording macro steps -->
+        <RecorderInput />
+      </div>
+
+      <RecorderFooter />
     </div>
-
-    <RecorderFooter />
   </div>
 </template>
 
 <script setup>
-// TODO:
-// X refactor filtering the keys
-// X add keyup functionality
-// X add delay between steps
-// X restyle keys and delay elements
-// X add lines between steps
-// X record macro to object
-// X refactor macro output based on object?
-// X Make sure keydown is not spamming steps
-// X Make record button work as a toggle
-// X Make edit button work
-// X Make fixed/custom delay work
-// X Refactor into multiple components and state store
-// X Make edit key function
-// X Make edit delay function
-// X Make delete key function
-// X Make sure delay is paused when not recording.
-// X Refactor macro recorder parts.
-// X X Layout parts should be parts, smaller parts should be components.
-// X Make reset function
-// - Make insert button, menu and function
-
 import RecorderOutput from './parts/RecorderOutput.vue'
 import RecorderInput from './parts/RecorderInput.vue'
 
@@ -53,24 +33,53 @@ const macroRecorder = useMacroRecorderStore()
 <style>
 @reference "@/assets/main.css";
 
+.macro-recorder {
+  @apply h-full;
+}
+
+.recorder-interface {
+  @apply grid
+  grid-rows-[auto_1fr_auto]
+  gap-4
+  h-full
+  transition-[grid-template-rows];
+}
+
 .recorder-interface__container {
   @apply relative
   w-full
-  h-96
-  my-4
   rounded-lg
-  bg-slate-900/50
-  border-2
-  border-white/10
+  bg-slate-950/50
+  border
+  border-slate-600
   overflow-auto
   transition-colors;
 
   &.record {
-    @apply border-rose-300  bg-rose-950/50;
+    @apply border-rose-300  bg-rose-400/10;
   }
 
   &.edit {
-    @apply border-sky-300 bg-sky-900/50;
+    @apply border-sky-300 bg-sky-900/10;
   }
+}
+
+#macro-name {
+  @apply w-full
+  bg-transparent
+  py-0
+  outline-0
+  border-transparent
+  border-b-slate-300
+  focus:border-transparent
+  focus:border-b-sky-400
+  focus:bg-sky-400/10
+  transition-colors
+  text-lg
+  rounded-none;
+}
+
+.disabled {
+  @apply opacity-50 pointer-events-none cursor-not-allowed;
 }
 </style>

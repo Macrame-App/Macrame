@@ -1,20 +1,27 @@
 <template>
-  <kbd :class="active ? 'active' : ''">
-    <sup v-if="keyObj.loc">
-      {{ keyObj.loc }}
-    </sup>
-    <span :innerHTML="keyObj.str" />
-    <span class="dir">{{ dir.value === 'down' ? '&darr;' : '&uarr;' }}</span>
+  <kbd :class="`${active ? 'active' : ''} ${empty ? 'empty' : ''}`">
+    <template v-if="keyObj">
+      <sup v-if="keyObj.loc">
+        {{ keyObj.loc }}
+      </sup>
+      <span :innerHTML="keyObj.str" />
+      <span class="dir">{{ dir.value === 'down' ? '&darr;' : '&uarr;' }}</span>
+    </template>
+
+    <template v-else-if="empty">
+      <span>[ ]</span>
+    </template>
   </kbd>
 </template>
 
 <script setup>
-import { onMounted, reactive } from 'vue'
+import { onMounted, onUpdated, reactive } from 'vue'
 
 const props = defineProps({
   keyObj: Object,
   direction: String,
   active: Boolean,
+  empty: Boolean,
 })
 
 const dir = reactive({
@@ -22,9 +29,18 @@ const dir = reactive({
 })
 
 onMounted(() => {
+  if (props.empty) return
+  setDirection()
+})
+
+onUpdated(() => {
+  setDirection()
+})
+
+const setDirection = () => {
   if (props.direction) dir.value = props.direction
   else dir.value = props.keyObj.direction
-})
+}
 </script>
 
 <style>
@@ -37,10 +53,11 @@ kbd {
   pl-4 pr-2 py-1 
   h-9 
   bg-slate-700
-  font-sans
+  font-mono
   font-bold
   text-lg
   text-white
+  whitespace-nowrap
   uppercase
   rounded-md 
   border
@@ -59,6 +76,21 @@ kbd {
 
   span.dir {
     @apply text-slate-200 pl-1;
+  }
+
+  &.empty {
+    @apply pl-3 pr-3 
+    bg-sky-400/50
+    border-sky-300
+    shadow-sky-600
+    tracking-widest
+    cursor-pointer;
+  }
+  &.insert {
+    @apply bg-yellow-500/50 
+    border-yellow-300 
+    shadow-yellow-600 
+    cursor-pointer;
   }
 }
 

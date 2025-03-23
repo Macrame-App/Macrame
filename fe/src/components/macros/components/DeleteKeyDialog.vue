@@ -26,9 +26,9 @@ const keyObj = ref(null)
 
 onMounted(() => {
   keyObj.value = filterKey(macroRecorder.getEditKey())
-  console.log(macroRecorder.getEditKey());
-  console.log(keyObj.value);
-  console.log('---------');
+  // console.log(macroRecorder.getEditKey());
+  // console.log(keyObj.value);
+  // console.log('---------');
 })
 </script>
 

@@ -1,14 +1,14 @@
 <template>
-  <ContextMenu>
+  <ContextMenu ref="ctxtMenu">
     <template #trigger>
-      <ButtonComp variant="secondary" size="sm"> <IconAlarmFilled />Fixed delay </ButtonComp>
+      <ButtonComp variant="secondary" size="sm"> <IconTimeDuration15 />Fixed delay </ButtonComp>
     </template>
     <template #content>
       <ul>
-        <li @click="macroRecorder.changeDelay(0)">0ms</li>
-        <li @click="macroRecorder.changeDelay(15)">15ms</li>
-        <li @click="macroRecorder.changeDelay(50)">50ms</li>
-        <li @click="macroRecorder.changeDelay(100)">100ms</li>
+        <li @click="changeDelay(0)">0ms</li>
+        <li @click="changeDelay(15)">15ms</li>
+        <li @click="changeDelay(50)">50ms</li>
+        <li @click="changeDelay(100)">100ms</li>
         <li>
           <DialogComp>
             <template #trigger>
@@ -19,7 +19,7 @@
               <h4 class="text-slate-50 mb-4">Custom delay</h4>
               <form
                 class="grid gap-4 w-44"
-                @submit.prevent="macroRecorder.changeDelay(parseInt($refs.customDelayInput.value))"
+                @submit.prevent="changeDelay(parseInt($refs.customDelayInput.value))"
               >
                 <div>
                   <input
@@ -46,7 +46,7 @@
 
 <script setup>
 import ContextMenu from '@/components/base/ContextMenu.vue'
-import { IconAlarmFilled } from '@tabler/icons-vue'
+import { IconTimeDuration15 } from '@tabler/icons-vue'
 import ButtonComp from '@/components/base/ButtonComp.vue'
 import DialogComp from '@/components/base/DialogComp.vue'
 
@@ -56,7 +56,12 @@ import { ref } from 'vue'
 
 const macroRecorder = useMacroRecorderStore()
 
-const delayMenu = ref(false)
+const ctxtMenu = ref()
+
+function changeDelay(num) {
+  macroRecorder.changeDelay(num)
+  ctxtMenu.value.toggle()
+}
 </script>
 
 <style scoped>

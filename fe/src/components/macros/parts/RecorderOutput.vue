@@ -51,4 +51,8 @@ const macroRecorder = useMacroRecorderStore()
   top-0 left-0
   h-fit;
 }
+
+hr.spacer:last-of-type {
+  @apply hidden;
+}
 </style>
