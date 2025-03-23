@@ -9,7 +9,17 @@
 
 <script setup>
 import MainMenu from '@/components/base/MainMenu.vue'
+import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
+import { useDeviceStore } from './stores/device'
+
+const device = useDeviceStore()
+
+onMounted(() => {
+  // Setting device uuid from localstorage
+  // If not present in LocalStorage a new uuidV4 will be generated
+  device.uuid()
+})
 </script>
 
 <style scoped>
