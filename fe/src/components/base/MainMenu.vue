@@ -1,8 +1,8 @@
 <template>
   <nav id="main-menu">
     <button id="menu-toggle" :class="menuOpen ? 'open' : ''" @click="menuOpen = !menuOpen">
-      <IconMenu2 />
-      <IconX />
+      <img class="logo" src="@/assets/Macrame-Logo-gradient.svg" aria-hidden="true" />
+      <IconX :class="{ 'opacity-0': !menuOpen }" />
     </button>
     <ul :class="menuOpen ? 'open' : ''">
       <li>
@@ -15,6 +15,9 @@
         <RouterLink @click="menuOpen = false" to="/macros"> <IconKeyboard />Macros </RouterLink>
       </li>
       <li>
+        <RouterLink @click="menuOpen = false" to="/devices"> <IconDevices />Devices </RouterLink>
+      </li>
+      <li>
         <RouterLink @click="menuOpen = false" to="/settings"> <IconSettings />Settings </RouterLink>
       </li>
     </ul>
@@ -24,10 +27,10 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import {
+  IconDevices,
   IconHome,
   IconKeyboard,
   IconLayoutGrid,
-  IconMenu2,
   IconSettings,
   IconX,
 } from '@tabler/icons-vue'
@@ -36,7 +39,7 @@ import { ref } from 'vue'
 const menuOpen = ref(false)
 </script>
 
-<style scoped>
+<style>
 @reference "@/assets/main.css";
 nav {
   @apply relative flex z-50;
@@ -48,10 +51,12 @@ nav {
     rounded-full
     aspect-square
     bg-white/20 hover:bg-white/40
+    border-0
     cursor-pointer
     transition-colors
     backdrop-blur-md;
 
+    .logo,
     svg {
       @apply absolute
       inset-1/2
@@ -61,18 +66,8 @@ nav {
       ease-in-out;
     }
 
-    svg:last-of-type {
-      @apply opacity-0;
-    }
-
-    &.open {
-      svg:first-of-type {
-        @apply opacity-0;
-      }
-
-      svg:last-of-type {
-        @apply opacity-100;
-      }
+    .logo {
+      @apply w-full;
     }
   }
 

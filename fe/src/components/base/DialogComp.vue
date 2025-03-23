@@ -3,7 +3,7 @@
     <div class="trigger" @click="toggleDialog(true)">
       <slot name="trigger" />
     </div>
-    <dialog ref="dialog">
+    <dialog ref="dialog" class="mcrm-block block__dark">
       <ButtonComp
         class="dialog__close p-0"
         variant="ghost"
@@ -28,6 +28,8 @@ const openDialog = ref()
 
 const emit = defineEmits(['onOpen', 'onClose', 'onToggle'])
 
+defineExpose({ toggleDialog })
+
 const props = defineProps({
   open: Boolean,
 })
@@ -40,7 +42,7 @@ onUpdated(() => {
   if (props.open === true) toggleDialog(props.open)
 })
 
-const toggleDialog = (openToggle) => {
+function toggleDialog(openToggle) {
   if (openToggle) {
     dialog.value.showModal()
     emit('onOpen')
@@ -64,7 +66,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style>
 @reference "@/assets/main.css";
 
 .dialog-container {
@@ -74,13 +76,10 @@ onMounted(() => {
     @apply fixed
     top-1/2 left-1/2
     -translate-x-1/2 -translate-y-1/2
-    p-4
-    bg-slate-800
-    border
-    border-slate-600
-    rounded-lg
-    shadow-md
-    shadow-black 
+    max-w-[calc(100vw-2rem)]
+    text-slate-200
+    /* shadow-md */
+    /* shadow-black  */
     z-50
     pointer-events-none;
 
@@ -94,7 +93,7 @@ onMounted(() => {
 
     .dialog__close {
       @apply absolute
-      top-2 right-2
+      top-4 right-4
       p-0
       text-white;
 
@@ -102,6 +101,11 @@ onMounted(() => {
         @apply size-5;
       }
     }
+  }
+}
+.dialog__content {
+  > *:first-child {
+    @apply pr-8;
   }
 }
 </style>

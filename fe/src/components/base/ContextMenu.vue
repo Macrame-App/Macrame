@@ -1,6 +1,6 @@
 <template>
   <div class="context-menu">
-    <div class="context-menu__trigger" @click="menuOpen = !menuOpen">
+    <div class="context-menu__trigger" @click="toggle">
       <slot name="trigger" />
     </div>
     <div :class="`context-menu__content ${menuOpen ? 'open' : ''}`">
@@ -10,7 +10,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUpdated } from 'vue'
+
+defineExpose({ toggle })
 
 const props = defineProps({
   open: Boolean,
@@ -21,6 +23,12 @@ const menuOpen = ref(false)
 onMounted(() => {
   menuOpen.value = props.open
 })
+
+function toggle() {
+  console.log('toggle')
+
+  menuOpen.value = !menuOpen.value
+}
 </script>
 
 <style>
@@ -55,7 +63,7 @@ onMounted(() => {
   }
 }
 
-ul {
+.context-menu ul {
   @apply text-slate-800
   divide-y
   divide-slate-300;
