@@ -1,7 +1,7 @@
 <template>
   <div class="app-background">
-    <img class="bg2" src="./assets/bg_2.jpg" aria-hidden="true" />
-    <img class="bg1" src="./assets/bg_1.jpg" aria-hidden="true" />
+    <img src="./assets/bg-gradient.svg" aria-hidden="true" />
+    <img src="@/assets/Macrame-Logo-white.svg" class="logo" aria-hidden="true" />
   </div>
   <MainMenu />
   <RouterView />
@@ -10,8 +10,6 @@
 <script setup>
 import MainMenu from '@/components/base/MainMenu.vue'
 import { RouterView } from 'vue-router'
-
-console.log('app.vue loaded')
 </script>
 
 <style scoped>
@@ -32,23 +30,14 @@ console.log('app.vue loaded')
     object-cover;
   }
 
-  .bg1 {
-    @apply mix-blend-multiply;
-  }
-
-  .bg2 {
-    @apply grayscale;
-  }
-
-  &::after {
-    @apply content-['']
-    absolute
-    inset-0
-    bg-radial
-    from-sky-400/40
-    to-black/80
-    mix-blend-multiply
-    pointer-events-none;
+  .logo {
+    @apply absolute
+    top-[10%]
+    left-[10%]
+    scale-[1.8]
+    p-28
+    opacity-35
+    mix-blend-overlay;
   }
 }
 </style>
