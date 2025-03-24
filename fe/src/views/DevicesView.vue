@@ -3,9 +3,9 @@
     <h1 class="panel__title">
       Devices <span class="text-sm">{{ isLocal() ? 'remote' : 'servers' }}</span>
     </h1>
-    <div class="panel__content">
-      <ServerView v-if="!isLocal()" />
-      <RemoteView v-else />
+    <div class="panel__content grid sm:grid-cols-2 gap-8">
+      <ServerView />
+      <RemoteView />
     </div>
   </div>
 </template>

@@ -34,7 +34,9 @@
 
   .panel__content {
     @apply grid
+    h-full
     pt-4 sm:pt-0
-    pl-0 sm:pl-4;
+    pl-0 sm:pl-4
+    overflow-auto;
   }
 }

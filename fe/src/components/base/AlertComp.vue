@@ -25,8 +25,9 @@ defineProps({
 @reference "@/assets/main.css";
 
 .alert {
-  @apply flex
-  items-center
+  @apply grid
+  grid-cols-[1rem_1fr]
+  items-start
   gap-4
   p-4
   border
@@ -36,7 +37,7 @@ defineProps({
   backdrop-blur-md;
 
   &.alert__info {
-    @apply text-sky-400 bg-sky-400/10;
+    @apply text-sky-100 bg-sky-400/40;
   }
 
   &.alert__success {

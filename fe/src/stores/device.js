@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import { appUrl } from '@/services/ApiService'
+import { appUrl, encrypt } from '@/services/ApiService'
 import { v4 as uuidv4 } from 'uuid'
 
 export const useDeviceStore = defineStore('device', () => {
@@ -15,6 +15,7 @@ export const useDeviceStore = defineStore('device', () => {
     status: false,
   })
 
+  // Current device
   const uuid = () => {
     if (!current.value.uuid && localStorage.getItem('deviceId')) {
       current.value.uuid = localStorage.getItem('deviceId')
@@ -30,23 +31,53 @@ export const useDeviceStore = defineStore('device', () => {
     return uuid
   }
 
-  const getRemoteDevices = async () => {
-    // remote.value = { penis: 'penis' }
-    // return
-    axios.post(appUrl() + '/device/list').then((data) => {
+  // Server application
+  const serverGetRemotes = async (remoteUuid) => {
+    axios.post(appUrl() + '/device/list', { uuid: remoteUuid }).then((data) => {
       if (data.data.devices) remote.value = data.data.devices
     })
   }
 
-  const checkServerAccess = async () => {
+  const serverStartLink = async (deviceUuid) => {
+    const request = await axios.post(appUrl() + '/device/link/start', { uuid: deviceUuid })
+    return request.data
+  }
+
+  // Remote application
+  const remoteCheckServerAccess = async () => {
     const check = await axios.post(appUrl() + '/device/access/check', { uuid: uuid() })
     server.value.access = check.data
     return check.data
   }
 
-  const requestServerAccess = async () => {
-    const request = await axios.post(appUrl() + '/device/access/request', { uuid: uuid() })
+  const remoteRequestServerAccess = async (deviceName, deviceType) => {
+    const request = await axios.post(appUrl() + '/device/access/request', {
+      uuid: uuid(),
+      name: deviceName,
+      type: deviceType,
+    })
     return request
+  }
+  const remotePingLink = async (cb) => {
+    // const linkRequest = await axios.post(appUrl() + '/device/link/ping', { uuid: deviceUuid })
+    // if (linkRequest.data)
+    const pingInterval = setInterval(() => {
+      axios.post(appUrl() + '/device/link/ping', { uuid: uuid() }).then((data) => {
+        if (data.data) {
+          clearInterval(pingInterval)
+          cb(data.data)
+        }
+      })
+    }, 1000)
+  }
+
+  const remoteHandshake = async (pin) => {
+    // send encrypt(uuid + pin)
+    // then decrypt data with pin = key
+
+    axios.post(appUrl() + '/device/handshake', { shake: pin }).then((data) => {
+      console.log(data)
+    })
   }
 
   return {
@@ -54,8 +85,11 @@ export const useDeviceStore = defineStore('device', () => {
     server,
     uuid,
     setDeviceId,
-    getRemoteDevices,
-    checkServerAccess,
-    requestServerAccess,
+    serverGetRemotes,
+    serverStartLink,
+    remoteCheckServerAccess,
+    remoteRequestServerAccess,
+    remotePingLink,
+    remoteHandshake,
   }
 })
