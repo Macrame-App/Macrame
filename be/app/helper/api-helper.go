@@ -10,8 +10,6 @@ import (
 )
 
 func EndpointAccess(w http.ResponseWriter, r *http.Request) bool {
-	log.Println("endpoint access")
-
 	ip, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		log.Fatal(err)
@@ -19,13 +17,13 @@ func EndpointAccess(w http.ResponseWriter, r *http.Request) bool {
 
 	if (isLocal(ip) && isEndpointAllowed("Local", r.URL.Path)) ||
 		(isLanRemote(ip) && isEndpointAllowed("Remote", r.URL.Path)) {
-		log.Println("accessible")
+		log.Println(r.URL.Path, "endpoint access: accessible")
 		return true
 	} else if isLanRemote(ip) && isEndpointAllowed("auth", r.URL.Path) && isDeviceAuthorized() {
-		log.Println("authorized")
+		log.Println(r.URL.Path, "endpoint access: authorized")
 	}
 
-	log.Println(r.URL.Path, "not authorized or accessible")
+	log.Println(r.URL.Path, "endpoint access: not authorized or accessible")
 
 	return false
 }

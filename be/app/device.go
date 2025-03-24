@@ -1,9 +1,12 @@
 package app
 
 import (
+	"be/app/helper"
 	"be/app/structs"
 	"encoding/json"
+	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -72,10 +75,7 @@ func PollRemote(w http.ResponseWriter, r *http.Request) {
 
 func DeviceAccessCheck(w http.ResponseWriter, r *http.Request) {
 	log.Println("device access check")
-}
-
-func DeviceAccessRequest(w http.ResponseWriter, r *http.Request) {
-	var req structs.RemoteWebhook
+	var req structs.Check
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 
@@ -84,10 +84,103 @@ func DeviceAccessRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(req)
-	// mu.Lock()
-	// queue[req.Device] = append(queue[req.Device], req)
-	// mu.Unlock()
+	_, errSett := os.Stat("devices/" + req.Uuid + ".json")
+	_, errKey := os.Stat("devices/" + req.Uuid + ".pem")
+
+	log.Println(errSett, errKey)
+
+	if (errSett == nil) && (errKey == nil) {
+		log.Println("authorized")
+		json.NewEncoder(w).Encode("authorized")
+	} else if (errSett == nil) && (errKey != nil) {
+		log.Println("requested")
+		json.NewEncoder(w).Encode("requested")
+	} else {
+		log.Println("unauthorized")
+		json.NewEncoder(w).Encode("unauthorized")
+	}
+
+	return
+}
+
+func DeviceAccessRequest(w http.ResponseWriter, r *http.Request) {
+	var req structs.Request
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	deviceSettings := structs.Settings{Name: req.Name, Type: req.Type}
+
+	settingsJSON, err := json.Marshal(deviceSettings)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	err = os.WriteFile("devices/"+req.Uuid+".json", settingsJSON, 0644)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(true)
+}
+
+func PingLink(w http.ResponseWriter, r *http.Request) {
+	log.Println("ping link")
+	var req structs.Check
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(false)
+		return
+	}
+
+	var filename = "devices/" + req.Uuid + ".tmp"
+
+	_, err = os.ReadFile(filename)
+
+	if err == nil {
+		json.NewEncoder(w).Encode(true)
+		return
+	}
+
+	json.NewEncoder(w).Encode(false)
+	return
+}
+
+func StartLink(w http.ResponseWriter, r *http.Request) {
+	var req structs.Check
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	pin := fmt.Sprintf("%04d", rand.Intn(10000))
+
+	if helper.TempPinFile(req.Uuid, pin) {
+		json.NewEncoder(w).Encode(pin)
+	}
+}
+
+func Handshake(w http.ResponseWriter, r *http.Request) {
+	var req structs.Handshake
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	log.Println(req.Shake)
 
 }
 

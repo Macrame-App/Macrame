@@ -15,11 +15,17 @@ var Endpoints = Allowed{
 		"/device/list",
 		"/device/access/check",
 		"/device/access/request",
+		"/device/link/ping",
+		"/device/link/start",
+		"/device/handshake",
 	},
 	Remote: []string{
 		"/macro/list",
 		"/device/access/check",
 		"/device/access/request",
+		"/device/link/ping",
+		"/device/link/end",
+		"/device/handshake",
 		"/device/auth",
 	},
 	Auth: []string{

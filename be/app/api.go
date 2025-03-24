@@ -67,6 +67,12 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 		DeviceAccessCheck(w, r)
 	case "/device/access/request":
 		DeviceAccessRequest(w, r)
+	case "/device/link/ping":
+		PingLink(w, r)
+	case "/device/link/start":
+		StartLink(w, r)
+	case "/device/handshake":
+		Handshake(w, r)
 	case "/poll/remote":
 		PollRemote(w, r)
 
