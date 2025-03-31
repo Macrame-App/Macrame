@@ -2,7 +2,7 @@
   <div class="device-overview">
     <AlertComp type="info">
       <div class="grid">
-        <strong>This is a server.</strong>
+        <strong>This is a server!</strong>
         <em>UUID: {{ device.uuid() }} </em>
       </div>
     </AlertComp>

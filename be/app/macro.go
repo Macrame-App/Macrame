@@ -45,7 +45,7 @@ func ListMacros(w http.ResponseWriter, r *http.Request) {
 	dir := "../macros"
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	var fileNames []string
