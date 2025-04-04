@@ -1,4 +1,4 @@
 be/devices/*
 be/tmp/
-public/
+public/*
 macros/*
