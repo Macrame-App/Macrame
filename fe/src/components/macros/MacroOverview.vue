@@ -16,7 +16,8 @@ import { IconKeyboard } from '@tabler/icons-vue'
 import ButtonComp from '../base/ButtonComp.vue'
 import { onMounted, reactive } from 'vue'
 import axios from 'axios'
-import { appUrl } from '@/services/ApiService'
+import { appUrl, isLocal } from '@/services/ApiService'
+import { AuthCall } from '@/services/EncryptService'
 
 const macros = reactive({
   list: [],
@@ -29,8 +30,9 @@ onMounted(() => {
 })
 
 function runMacro(macro) {
-  console.log(macro)
-  axios.post(appUrl() + '/macro/play', { macro: macro }).then((data) => {
+  const data = isLocal() ? { macro: macro } : AuthCall({ macro: macro })
+
+  axios.post(appUrl() + '/macro/play', data).then((data) => {
     console.log(data)
   })
 }

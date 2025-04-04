@@ -1,31 +1,50 @@
 <template>
   <nav id="main-menu">
-    <button id="menu-toggle" :class="menuOpen ? 'open' : ''" @click="menuOpen = !menuOpen">
-      <img class="logo" src="@/assets/img/Macrame-Logo-gradient.svg" aria-hidden="true" />
+    <button
+      id="menu-toggle"
+      :class="menuOpen ? 'open' : ''"
+      @click="menuOpen = !menuOpen"
+    >
+      <img
+        class="logo p-1"
+        :class="{ 'opacity-0': menuOpen }"
+        src="@/assets/img/Macrame-Logo-gradient.svg"
+        aria-hidden="true"
+      />
       <IconX :class="{ 'opacity-0': !menuOpen }" />
     </button>
     <ul :class="menuOpen ? 'open' : ''">
       <li>
-        <RouterLink @click="menuOpen = false" to="/"> <IconHome />Dashboard </RouterLink>
+        <RouterLink @click="menuOpen = false" to="/">
+          <IconHome />Dashboard
+        </RouterLink>
       </li>
       <li>
-        <RouterLink @click="menuOpen = false" to="/panels"> <IconLayoutGrid />Panels </RouterLink>
+        <RouterLink @click="menuOpen = false" to="/panels">
+          <IconLayoutGrid />Panels
+        </RouterLink>
       </li>
       <li>
-        <RouterLink @click="menuOpen = false" to="/macros"> <IconKeyboard />Macros </RouterLink>
+        <RouterLink @click="menuOpen = false" to="/macros">
+          <IconKeyboard />Macros
+        </RouterLink>
       </li>
       <li>
-        <RouterLink @click="menuOpen = false" to="/devices"> <IconDevices />Devices </RouterLink>
+        <RouterLink @click="menuOpen = false" to="/devices">
+          <IconDevices />Device
+        </RouterLink>
       </li>
       <li>
-        <RouterLink @click="menuOpen = false" to="/settings"> <IconSettings />Settings </RouterLink>
+        <RouterLink @click="menuOpen = false" to="/settings">
+          <IconSettings />Settings
+        </RouterLink>
       </li>
     </ul>
   </nav>
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router'
+import { RouterLink } from "vue-router";
 import {
   IconDevices,
   IconHome,
@@ -33,10 +52,10 @@ import {
   IconLayoutGrid,
   IconSettings,
   IconX,
-} from '@tabler/icons-vue'
-import { ref } from 'vue'
+} from "@tabler/icons-vue";
+import { ref } from "vue";
 
-const menuOpen = ref(false)
+const menuOpen = ref(false);
 </script>
 
 <style>

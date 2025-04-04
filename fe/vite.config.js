@@ -7,16 +7,25 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    host: 'localhost',
+    port: 5173,
+    watch: {
+      usePolling: true,
+    },
+  },
   plugins: [vue(), vueDevTools(), tailwindcss()],
+  envDir: '../',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   base: '/',
-  publicDir: '../public',
+  // publicDir: "../public",
   build: {
     outDir: '../public',
-    sourcemap: true,
+    sourcemap: false,
+    minify: false,
   },
 })

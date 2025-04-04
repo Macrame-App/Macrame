@@ -1,14 +1,14 @@
-@import './style/_macro';
-@import './style/_mcrm-block';
-@import './style/_panel';
+@import "./style/_macro.css";
+@import "./style/_mcrm-block.css";
+@import "./style/_panel.css";
 
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Roboto', sans-serif;
-  --font-mono: 'Fira Code', monospace;
+  --font-sans: "Roboto", sans-serif;
+  --font-mono: "Fira Code", monospace;
 }
 
 body {

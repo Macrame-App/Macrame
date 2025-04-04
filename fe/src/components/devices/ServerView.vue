@@ -7,7 +7,11 @@
       </div>
     </AlertComp>
 
-    <div class="mcrm-block block__light flex flex-wrap items-start">
+    <div class="mcrm-block block__light flex flex-wrap items-start gap-4">
+      <h4 class="w-full flex gap-4 items-center justify-between mb-4">
+        <span class="flex gap-4"> <IconDevices />Remote devices </span>
+        <ButtonComp variant="primary" @click="device.serverGetRemotes()"><IconReload /></ButtonComp>
+      </h4>
       <!-- {{ Object.keys(remote.devices).length }} -->
       <template v-if="Object.keys(remote.devices).length > 0">
         <div
@@ -28,32 +32,32 @@
             <em>{{ id }}</em>
           </div>
           <template v-if="remoteDevice.key">
-            <AlertComp type="success">Linked</AlertComp>
-            <ButtonComp variant="danger"> <IconLinkOff />Unlink device </ButtonComp>
+            <AlertComp type="success">Authorized</AlertComp>
+            <ButtonComp variant="danger" @click="unlinkDevice(id)">
+              <IconLinkOff />Unlink device
+            </ButtonComp>
           </template>
           <template v-else>
-            <AlertComp type="warning">Not linked</AlertComp>
+            <AlertComp type="warning">Unauthorized</AlertComp>
             <ButtonComp variant="primary" @click="startLink(id)">
               <IconLink />Link device
             </ButtonComp>
+          </template>
+          <template v-if="remote.pinlink.uuid == id">
+            <AlertComp type="info">One time pin: {{ remote.pinlink.pin }}</AlertComp>
           </template>
         </div>
       </template>
       <template v-else>
         <div class="grid w-full gap-4">
           <em class="text-slate-300">No remote devices</em>
-          <div class="flex justify-end">
-            <ButtonComp variant="primary" @click="device.serverGetRemotes()">
-              <IconReload />Check for access requests
-            </ButtonComp>
-          </div>
         </div>
       </template>
       <DialogComp ref="pinDialog">
         <template #content>
           <div class="grid gap-4">
             <h3>Pin code</h3>
-            <span class="text-4xl font-mono tracking-wide">{{ remote.pinlink }}</span>
+            <span class="text-4xl font-mono tracking-wide">{{ remote.pinlink.pin }}</span>
           </div>
         </template>
       </DialogComp>
@@ -62,14 +66,18 @@
 </template>
 
 <script setup>
+// TODO
+// - startLink -> responsePin also in device block
+// - startLink -> poll removal of pin file, if removed close dialog, update device list
+// - Make unlink work
+
 import { onMounted, reactive, ref } from 'vue'
 import AlertComp from '../base/AlertComp.vue'
 import { useDeviceStore } from '@/stores/device'
 import {
+  IconDevices,
   IconDeviceDesktop,
   IconDeviceMobile,
-  IconDevicesMinus,
-  IconDevicesPlus,
   IconDeviceTablet,
   IconDeviceUnknown,
   IconLink,
@@ -78,12 +86,14 @@ import {
 } from '@tabler/icons-vue'
 import ButtonComp from '../base/ButtonComp.vue'
 import DialogComp from '../base/DialogComp.vue'
+import axios from 'axios'
+import { appUrl } from '@/services/ApiService'
 
 const device = useDeviceStore()
 
 const pinDialog = ref()
 
-const remote = reactive({ devices: [], pinlink: '' })
+const remote = reactive({ devices: [], pinlink: false })
 
 onMounted(() => {
   device.serverGetRemotes()
@@ -96,8 +106,37 @@ onMounted(() => {
 async function startLink(deviceUuid) {
   const pin = await device.serverStartLink(deviceUuid)
 
-  remote.pinlink = pin
+  remote.pinlink = { uuid: deviceUuid, pin: pin }
   pinDialog.value.toggleDialog(true)
+
+  pollLink()
+
+  setTimeout(() => {
+    resetPinLink()
+  }, 60000)
+}
+
+function pollLink() {
+  const pollInterval = setInterval(() => {
+    axios.post(appUrl() + '/device/link/poll', { uuid: remote.pinlink.uuid }).then((data) => {
+      if (!data.data) {
+        clearInterval(pollInterval)
+        resetPinLink()
+        device.serverGetRemotes()
+      }
+    })
+  }, 1000)
+}
+
+function resetPinLink() {
+  remote.pinlink = false
+  if (pinDialog.value) pinDialog.value.toggleDialog(false)
+}
+
+function unlinkDevice(id) {
+  axios.post(appUrl() + '/device/link/remove', { uuid: id }).then((data) => {
+    if (data.data) device.serverGetRemotes()
+  })
 }
 </script>
 

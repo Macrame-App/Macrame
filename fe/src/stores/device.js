@@ -3,11 +3,13 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { appUrl, encrypt } from '@/services/ApiService'
 import { v4 as uuidv4 } from 'uuid'
+import { encryptAES, getDateStr } from '@/services/EncryptService'
 
 export const useDeviceStore = defineStore('device', () => {
   // Properties - State values
   const current = ref({
     uuid: false,
+    key: false,
   })
 
   const remote = ref([])
@@ -29,6 +31,23 @@ export const useDeviceStore = defineStore('device', () => {
     const uuid = uuidv4()
     localStorage.setItem('deviceId', uuid)
     return uuid
+  }
+
+  const key = () => {
+    if (!current.value.key && localStorage.getItem('deviceKey')) {
+      current.value.key = localStorage.getItem('deviceKey')
+    }
+    return current.value.key
+  }
+
+  const setDeviceKey = (key) => {
+    current.value.key = key
+    localStorage.setItem('deviceKey', key)
+  }
+
+  const removeDeviceKey = () => {
+    current.value.key = false
+    localStorage.removeItem('deviceKey')
   }
 
   // Server application
@@ -71,13 +90,14 @@ export const useDeviceStore = defineStore('device', () => {
     }, 1000)
   }
 
-  const remoteHandshake = async (pin) => {
-    // send encrypt(uuid + pin)
-    // then decrypt data with pin = key
-
-    axios.post(appUrl() + '/device/handshake', { shake: pin }).then((data) => {
-      console.log(data)
+  const remoteHandshake = async (key) => {
+    const handshake = await axios.post(appUrl() + '/device/handshake', {
+      uuid: uuid(),
+      shake: encryptAES(key, getDateStr()),
     })
+    console.log(handshake)
+
+    return handshake.data
   }
 
   return {
@@ -85,6 +105,9 @@ export const useDeviceStore = defineStore('device', () => {
     server,
     uuid,
     setDeviceId,
+    key,
+    setDeviceKey,
+    removeDeviceKey,
     serverGetRemotes,
     serverStartLink,
     remoteCheckServerAccess,
