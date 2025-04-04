@@ -1,0 +1,87 @@
+/*! tailwindcss v4.0.9 | MIT License | https://tailwindcss.com */
+.alert[data-v-87f6de25] {
+  align-items: flex-start;
+  gap: calc(var(--spacing, .25rem) * 4);
+  border-radius: var(--radius-md, .375rem);
+  border-style: var(--tw-border-style);
+  border-width: 1px;
+  border-color: color-mix(in oklab, var(--color-white, #fff) 10%, transparent);
+  background-color: color-mix(in oklab, var(--color-white, #fff) 10%, transparent);
+  padding: calc(var(--spacing, .25rem) * 4);
+  --tw-backdrop-blur: blur(var(--blur-md, 12px));
+  -webkit-backdrop-filter: var(--tw-backdrop-blur, ) var(--tw-backdrop-brightness, ) var(--tw-backdrop-contrast, ) var(--tw-backdrop-grayscale, ) var(--tw-backdrop-hue-rotate, ) var(--tw-backdrop-invert, ) var(--tw-backdrop-opacity, ) var(--tw-backdrop-saturate, ) var(--tw-backdrop-sepia, );
+  backdrop-filter: var(--tw-backdrop-blur, ) var(--tw-backdrop-brightness, ) var(--tw-backdrop-contrast, ) var(--tw-backdrop-grayscale, ) var(--tw-backdrop-hue-rotate, ) var(--tw-backdrop-invert, ) var(--tw-backdrop-opacity, ) var(--tw-backdrop-saturate, ) var(--tw-backdrop-sepia, );
+  grid-template-columns: 1rem 1fr;
+  display: grid;
+}
+.alert.alert__info[data-v-87f6de25] {
+  background-color: color-mix(in oklab, var(--color-sky-400, oklch(.746 .16 232.661)) 40%, transparent);
+  color: var(--color-sky-100, oklch(.951 .026 236.824));
+}
+.alert.alert__success[data-v-87f6de25] {
+  background-color: color-mix(in oklab, var(--color-lime-400, oklch(.841 .238 128.85)) 10%, transparent);
+  color: var(--color-lime-400, oklch(.841 .238 128.85));
+}
+.alert.alert__warning[data-v-87f6de25] {
+  background-color: color-mix(in oklab, var(--color-amber-400, oklch(.828 .189 84.429)) 10%, transparent);
+  color: var(--color-amber-400, oklch(.828 .189 84.429));
+}
+.alert.alert__error[data-v-87f6de25] {
+  background-color: color-mix(in oklab, var(--color-rose-400, oklch(.712 .194 13.428)) 10%, transparent);
+  color: var(--color-rose-400, oklch(.712 .194 13.428));
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-backdrop-blur {
+  syntax: "*";
+  inherits: false
+}
+@property --tw-backdrop-brightness {
+  syntax: "*";
+  inherits: false
+}
+@property --tw-backdrop-contrast {
+  syntax: "*";
+  inherits: false
+}
+@property --tw-backdrop-grayscale {
+  syntax: "*";
+  inherits: false
+}
+@property --tw-backdrop-hue-rotate {
+  syntax: "*";
+  inherits: false
+}
+@property --tw-backdrop-invert {
+  syntax: "*";
+  inherits: false
+}
+@property --tw-backdrop-opacity {
+  syntax: "*";
+  inherits: false
+}
+@property --tw-backdrop-saturate {
+  syntax: "*";
+  inherits: false
+}
+@property --tw-backdrop-sepia {
+  syntax: "*";
+  inherits: false
+}
+/*! tailwindcss v4.0.9 | MIT License | https://tailwindcss.com */
+.device-overview[data-v-f4165abd] {
+  align-content: flex-start;
+  gap: calc(var(--spacing, .25rem) * 4);
+  display: grid;
+}
+/*! tailwindcss v4.0.9 | MIT License | https://tailwindcss.com */
+.server-overview[data-v-3109048f] {
+  align-content: flex-start;
+  gap: calc(var(--spacing, .25rem) * 4);
+  display: grid;
+}
+/*! tailwindcss v4.0.9 | MIT License | https://tailwindcss.com */
+

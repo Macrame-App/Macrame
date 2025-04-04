@@ -1,0 +1,26 @@
+package main
+
+import (
+	"log"
+	"net/http"
+
+	"be/app"
+)
+
+func main() {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		apiInit(w, r)
+	})
+
+	log.Println(http.ListenAndServe(":6970", nil))
+}
+
+func apiInit(w http.ResponseWriter, r *http.Request) {
+	app.ApiCORS(w, r)
+
+	if r.Method == "GET" {
+		app.ApiGet(w, r)
+	} else if r.Method == "POST" {
+		app.ApiPost(w, r)
+	}
+}

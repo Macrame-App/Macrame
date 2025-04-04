@@ -1,0 +1,89 @@
+@import "./style/_macro.css";
+@import "./style/_mcrm-block.css";
+@import "./style/_panel.css";
+
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Roboto", sans-serif;
+  --font-mono: "Fira Code", monospace;
+}
+
+body {
+  @apply font-sans
+  font-light
+  tracking-wide
+  bg-slate-900
+  text-slate-50;
+}
+
+h1,
+h2 {
+  @apply font-mono
+  font-bold;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  @apply font-semibold;
+}
+
+h1 {
+  @apply text-4xl;
+}
+
+h2 {
+  @apply text-3xl;
+}
+
+h3 {
+  @apply text-2xl;
+}
+
+h4 {
+  @apply text-xl;
+}
+
+h5 {
+  @apply text-lg;
+}
+
+input {
+  @apply w-full 
+  px-2 py-1
+  border
+  border-slate-400
+  text-white
+  rounded-md
+  bg-black/20;
+}
+
+:has(> input + span) {
+  @apply flex;
+
+  input {
+    @apply rounded-r-none;
+  }
+
+  span {
+    @apply flex
+    items-center
+    px-2
+    rounded-r-md
+    text-white
+    bg-slate-400;
+  }
+}
+
+ul {
+  @apply list-disc
+  list-inside;
+}
+
+strong {
+  @apply font-bold;
+}
