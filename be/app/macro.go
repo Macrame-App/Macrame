@@ -63,10 +63,10 @@ func ListMacros(w http.ResponseWriter, r *http.Request) {
 
 func DeleteMacro(w http.ResponseWriter, r *http.Request) {}
 
-func PlayMacro(w http.ResponseWriter, r *http.Request) {
-	var req structs.MacroRequest
+func PlayMacro(data string, w http.ResponseWriter, r *http.Request) {
+	req := &structs.MacroRequest{}
+	_, err := helper.ParseRequest(req, data, r)
 
-	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

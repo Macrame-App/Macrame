@@ -1,15 +1,17 @@
 package helper
 
 import (
+	"encoding/json"
 	"log"
 	"net"
 	"net/http"
 	"strings"
 
+	"be/app/structs"
 	. "be/app/structs"
 )
 
-func EndpointAccess(w http.ResponseWriter, r *http.Request) bool {
+func EndpointAccess(w http.ResponseWriter, r *http.Request) (bool, string) {
 	ip, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		log.Fatal(err)
@@ -18,14 +20,18 @@ func EndpointAccess(w http.ResponseWriter, r *http.Request) bool {
 	if (isLocal(ip) && isEndpointAllowed("Local", r.URL.Path)) ||
 		(isLanRemote(ip) && isEndpointAllowed("Remote", r.URL.Path)) {
 		log.Println(r.URL.Path, "endpoint access: accessible")
-		return true
-	} else if isLanRemote(ip) && isEndpointAllowed("auth", r.URL.Path) && isDeviceAuthorized() {
+		return true, ""
+	} else if isLanRemote(ip) && isEndpointAllowed("Auth", r.URL.Path) {
 		log.Println(r.URL.Path, "endpoint access: authorized")
+
+		data := decryptAuth(r)
+
+		return data != "", data
 	}
 
 	log.Println(r.URL.Path, "endpoint access: not authorized or accessible")
 
-	return false
+	return false, ""
 }
 
 func isLocal(ip string) bool {
@@ -67,6 +73,30 @@ func getAllowedEndpoints(source string) (endpoints []string, err string) {
 	return []string{}, "No allowed endpoints"
 }
 
-func isDeviceAuthorized() bool {
-	return false
+func decryptAuth(r *http.Request) string {
+	var req structs.Authcall
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil || req.Uuid == "" || req.Data == "" {
+		return ""
+	}
+
+	deviceKey, errKey := GetKeyByUuid(req.Uuid)
+	decryptData, errDec := DecryptAES(deviceKey, req.Data)
+
+	if errKey != nil && errDec != nil || decryptData == "" {
+		return ""
+	}
+
+	return decryptData
+}
+
+func ParseRequest(req interface{}, data string, r *http.Request) (d interface{}, err error) {
+	if data != "" {
+		dataBytes := []byte(data)
+		return req, json.Unmarshal(dataBytes, &req)
+	} else {
+		return req, json.NewDecoder(r.Body).Decode(&req)
+	}
 }

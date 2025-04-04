@@ -17,6 +17,8 @@ var Endpoints = Allowed{
 		"/device/access/request",
 		"/device/link/ping",
 		"/device/link/start",
+		"/device/link/poll",
+		"/device/link/remove",
 		"/device/handshake",
 	},
 	Remote: []string{
@@ -30,5 +32,6 @@ var Endpoints = Allowed{
 	},
 	Auth: []string{
 		"/macro/play",
+		"/device/link/remove",
 	},
 }

@@ -11,7 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
+	"time"
 )
 
 func DeviceList(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func DeviceList(w http.ResponseWriter, r *http.Request) {
 		if ext == ".json" {
 			devices[device]["settings"] = readDeviceSettings(filePath)
 		}
-		if ext == ".pem" {
+		if ext == ".key" {
 			devices[device]["key"] = true
 		}
 	}
@@ -64,15 +64,6 @@ func readDeviceSettings(filepath string) (settings structs.Settings) {
 	return settings
 }
 
-var (
-	mu    sync.Mutex
-	queue = make(map[string][]structs.RemoteWebhook)
-)
-
-func PollRemote(w http.ResponseWriter, r *http.Request) {
-
-}
-
 func DeviceAccessCheck(w http.ResponseWriter, r *http.Request) {
 	log.Println("device access check")
 	var req structs.Check
@@ -85,19 +76,17 @@ func DeviceAccessCheck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, errSett := os.Stat("devices/" + req.Uuid + ".json")
-	_, errKey := os.Stat("devices/" + req.Uuid + ".pem")
-
-	log.Println(errSett, errKey)
+	_, errKey := os.Stat("devices/" + req.Uuid + ".key")
 
 	if (errSett == nil) && (errKey == nil) {
 		log.Println("authorized")
 		json.NewEncoder(w).Encode("authorized")
 	} else if (errSett == nil) && (errKey != nil) {
-		log.Println("requested")
-		json.NewEncoder(w).Encode("requested")
-	} else {
 		log.Println("unauthorized")
 		json.NewEncoder(w).Encode("unauthorized")
+	} else {
+		log.Println("unauthorized")
+		json.NewEncoder(w).Encode("unlinked")
 	}
 
 	return
@@ -128,7 +117,7 @@ func DeviceAccessRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(true)
+	json.NewEncoder(w).Encode("unauthorized")
 }
 
 func PingLink(w http.ResponseWriter, r *http.Request) {
@@ -141,20 +130,24 @@ func PingLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var filename = "devices/" + req.Uuid + ".tmp"
+	key, keyErr := os.ReadFile("devices/" + req.Uuid + ".key")
+	pin, pinErr := os.ReadFile("devices/" + req.Uuid + ".tmp")
 
-	_, err = os.ReadFile(filename)
+	encryptedKey, encErr := helper.EncryptAES(string(pin), string(key))
 
-	if err == nil {
-		json.NewEncoder(w).Encode(true)
+	log.Println(encryptedKey, string(pin), string(key))
+
+	if keyErr == nil && pinErr == nil && encErr == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(encryptedKey))
 		return
 	}
 
 	json.NewEncoder(w).Encode(false)
-	return
 }
 
 func StartLink(w http.ResponseWriter, r *http.Request) {
+	log.Println("start link")
 	var req structs.Check
 
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -166,9 +159,52 @@ func StartLink(w http.ResponseWriter, r *http.Request) {
 
 	pin := fmt.Sprintf("%04d", rand.Intn(10000))
 
-	if helper.TempPinFile(req.Uuid, pin) {
+	deviceKey := helper.GenerateKey()
+
+	err = helper.SaveDeviceKey(req.Uuid, deviceKey)
+
+	if err == nil && helper.TempPinFile(req.Uuid, pin) {
 		json.NewEncoder(w).Encode(pin)
 	}
+
+	return
+}
+
+func PollLink(w http.ResponseWriter, r *http.Request) {
+	var req structs.Check
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(false)
+		return
+	}
+
+	if helper.CheckPinFile(req.Uuid) {
+		json.NewEncoder(w).Encode(true)
+		return
+	}
+
+	json.NewEncoder(w).Encode(false)
+}
+
+func RemoveLink(data string, w http.ResponseWriter, r *http.Request) {
+	req := &structs.Check{}
+	_, err := helper.ParseRequest(req, data, r)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(false)
+		return
+	}
+
+	err = os.Remove("devices/" + req.Uuid + ".key")
+
+	if err != nil {
+		json.NewEncoder(w).Encode(false)
+		return
+	}
+
+	json.NewEncoder(w).Encode(true)
 }
 
 func Handshake(w http.ResponseWriter, r *http.Request) {
@@ -177,13 +213,33 @@ func Handshake(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&req)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	log.Println(req.Shake)
 
+	deviceKey, err := helper.GetKeyByUuid(req.Uuid)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(false)
+		return
+	}
+
+	decryptShake, _ := helper.DecryptAES(deviceKey, req.Shake)
+
+	if decryptShake == getDateStr() {
+		os.Remove("devices/" + req.Uuid + ".tmp")
+
+		json.NewEncoder(w).Encode(true)
+		return
+	} else {
+		os.Remove("devices/" + req.Uuid + ".key")
+	}
+
+	json.NewEncoder(w).Encode(false)
 }
 
-func DeviceAuth(w http.ResponseWriter, r *http.Request) bool {
-	return true
+func getDateStr() string {
+	date := time.Now()
+	year, month, day := date.Date()
+	formattedDate := fmt.Sprintf("%04d%02d%02d", year, month, day)
+	return formattedDate
 }

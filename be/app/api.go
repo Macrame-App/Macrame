@@ -48,7 +48,15 @@ func ApiGet(w http.ResponseWriter, r *http.Request) {
 
 func ApiPost(w http.ResponseWriter, r *http.Request) {
 
-	if !helper.EndpointAccess(w, r) {
+	access, data := helper.EndpointAccess(w, r)
+
+	if !access {
+		return
+	}
+
+	log.Println("api post", data == "")
+	if data != "" {
+		ApiAuth(data, w, r)
 		return
 	}
 
@@ -60,7 +68,7 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 	case "/macro/delete":
 		DeleteMacro(w, r)
 	case "/macro/play":
-		PlayMacro(w, r)
+		PlayMacro("", w, r)
 	case "/device/list":
 		DeviceList(w, r)
 	case "/device/access/check":
@@ -71,10 +79,21 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 		PingLink(w, r)
 	case "/device/link/start":
 		StartLink(w, r)
+	case "/device/link/poll":
+		PollLink(w, r)
+	case "/device/link/remove":
+		RemoveLink("", w, r)
 	case "/device/handshake":
 		Handshake(w, r)
-	case "/poll/remote":
-		PollRemote(w, r)
+	}
+}
 
+func ApiAuth(data string, w http.ResponseWriter, r *http.Request) {
+	log.Println("apiauth", data != "")
+	switch r.URL.Path {
+	case "/macro/play":
+		PlayMacro(data, w, r)
+	case "/device/link/remove":
+		RemoveLink(data, w, r)
 	}
 }

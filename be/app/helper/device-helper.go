@@ -22,6 +22,25 @@ func TempPinFile(Uuid string, pin string) bool {
 	return true
 }
 
-func CheckPinFile(encryptedData []byte) bool {
-	return false
+func CheckPinFile(Uuid string) bool {
+	_, err := os.Stat("devices/" + Uuid + ".tmp")
+	return err == nil
+}
+
+func SaveDeviceKey(Uuid string, key string) error {
+	err := os.WriteFile("devices/"+Uuid+".key", []byte(key), 0644)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetKeyByUuid(Uuid string) (string, error) {
+	data, err := os.ReadFile("devices/" + Uuid + ".key")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
 }

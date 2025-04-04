@@ -12,7 +12,7 @@ func main() {
 		apiInit(w, r)
 	})
 
-	log.Fatal(http.ListenAndServe(":6970", nil))
+	log.Println(http.ListenAndServe(":6970", nil))
 }
 
 func apiInit(w http.ResponseWriter, r *http.Request) {

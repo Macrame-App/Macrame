@@ -21,5 +21,11 @@ type Request struct {
 }
 
 type Handshake struct {
+	Uuid  string `json:"uuid"`
 	Shake string `json:"shake"`
+}
+
+type Authcall struct {
+	Uuid string `json:"uuid"`
+	Data string `json:"d"`
 }
