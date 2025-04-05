@@ -2,3 +2,4 @@ be/devices/*
 be/tmp/
 public/*
 macros/*
+node_modules
