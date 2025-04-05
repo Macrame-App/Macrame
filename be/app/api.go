@@ -85,6 +85,10 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 		RemoveLink("", w, r)
 	case "/device/handshake":
 		Handshake(w, r)
+	case "/panel/list":
+		PanelList(w, r)
+	case "/panel/get":
+		GetPanel(w, r)
 	}
 }
 

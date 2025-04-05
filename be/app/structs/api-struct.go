@@ -20,6 +20,8 @@ var Endpoints = Allowed{
 		"/device/link/poll",
 		"/device/link/remove",
 		"/device/handshake",
+		"/panel/get",
+		"/panel/list",
 	},
 	Remote: []string{
 		"/macro/list",
