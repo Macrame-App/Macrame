@@ -67,6 +67,8 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 		DeleteMacro(w, r)
 	case "/macro/play":
 		PlayMacro("", w, r)
+	case "/device/server/ip":
+		GetServerIP(w, r)
 	case "/device/list":
 		DeviceList(w, r)
 	case "/device/access/check":
@@ -82,7 +84,6 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 	case "/device/link/remove":
 		RemoveLink("", w, r)
 	case "/device/handshake":
-		log.Println("handshake")
 		Handshake(w, r)
 	case "/panel/list":
 		PanelList(w, r)

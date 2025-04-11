@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"be/app"
+	"be/app/helper"
 )
 
 func main() {
@@ -12,7 +13,7 @@ func main() {
 		apiInit(w, r)
 	})
 
-	log.Println(http.ListenAndServe(":6970", nil))
+	log.Println(http.ListenAndServe(":"+helper.EnvGet("MCRM__PORT"), nil))
 }
 
 func apiInit(w http.ResponseWriter, r *http.Request) {

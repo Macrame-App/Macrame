@@ -12,6 +12,7 @@ var Endpoints = Allowed{
 		"/macro/list",
 		"/macro/delete",
 		"/macro/play",
+		"/device/server/ip",
 		"/device/list",
 		"/device/access/check",
 		"/device/access/request",

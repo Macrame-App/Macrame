@@ -7,12 +7,41 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
+
+func GetServerIP(w http.ResponseWriter, r *http.Request) {
+	ifs, err := net.Interfaces()
+	if err != nil {
+		log.Println(err)
+	}
+	for _, ifi := range ifs {
+		addrs, err := ifi.Addrs()
+		if err != nil {
+			log.Println(err)
+		}
+		for _, addr := range addrs {
+			var ip net.IP
+
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
+
+			if ip != nil && ip.To4() != nil {
+				json.NewEncoder(w).Encode(ip.String())
+				return
+			}
+		}
+	}
+}
 
 func DeviceList(w http.ResponseWriter, r *http.Request) {
 	log.Println("device list")
@@ -29,7 +58,7 @@ func DeviceList(w http.ResponseWriter, r *http.Request) {
 		ext := filepath.Ext(filePath)
 		device := strings.TrimSuffix(file.Name(), ext)
 
-		log.Println(device, ext)
+		// log.Println(device, ext)
 
 		if _, ok := devices[device]; !ok {
 			devices[device] = make(map[string]interface{})
@@ -46,6 +75,8 @@ func DeviceList(w http.ResponseWriter, r *http.Request) {
 	result := map[string]interface{}{
 		"devices": devices,
 	}
+
+	log.Println(result)
 
 	json.NewEncoder(w).Encode(result)
 }
