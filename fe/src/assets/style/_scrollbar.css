@@ -1,0 +1,23 @@
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-moz-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded bg-slate-400/80;
+}
+
+::-moz-scrollbar-thumb {
+  @apply rounded bg-slate-400/80;
+}
+
+::-webkit-scrollbar-track {
+  @apply mr-1 rounded bg-slate-100/10;
+}
+
+::-moz-scrollbar-track {
+  @apply mr-1 rounded bg-slate-100/10;
+}

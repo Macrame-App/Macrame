@@ -1,0 +1,28 @@
+.input-group {
+  @apply grid gap-2;
+}
+
+input,
+select {
+  @apply w-full px-2 py-1 text-white border rounded-md border-slate-400 bg-black/20;
+}
+
+:has(> input + span) {
+  @apply flex;
+
+  input {
+    @apply rounded-r-none;
+  }
+
+  span {
+    @apply flex items-center px-2 text-white rounded-r-md bg-slate-400;
+  }
+}
+
+select option {
+  @apply bg-slate-700;
+
+  &:not([disabled]) {
+    @apply cursor-pointer;
+  }
+}

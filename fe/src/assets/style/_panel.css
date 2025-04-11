@@ -22,19 +22,12 @@
   }
 
   .panel__title {
-    @apply bg-gradient-to-r
-    w-fit
-    from-amber-300
-    to-white/50
-    pt-3
-    pl-16 sm:pl-4
-    bg-clip-text
-    text-transparent;
+    @apply pt-3 pl-16 text-transparent bg-gradient-to-r w-fit from-amber-300 to-white/50 sm:pl-4 bg-clip-text;
   }
 
   .panel__content {
     @apply grid
-    h-full
+    h-[calc(100%-1rem)]
     pt-4 sm:pt-0
     pl-0 sm:pl-4
     overflow-auto;
