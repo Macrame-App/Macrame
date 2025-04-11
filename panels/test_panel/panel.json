@@ -1,8 +1,1 @@
-{
-  "name": "Test Panel 1",
-  "description": "This is the very first panel to be created. It is a test panel.",
-  "aspectRatio": "9/20",
-  "macros": {
-    "button_1": "task_manager"
-  }
-}
+{"dir":"","name":"Test Panel 1","description":"This is the very first panel to be created. It is a test panel. I'm gonna add more words to this description, not because it's an unclear description. But more so to test long descriptions in the UI. Very Nice.","aspectRatio":"10/20","macros":{"button_1":"Task_manager","button_16":"Task_manager","button_2":"ALT+F4"}}
