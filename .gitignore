@@ -1,5 +1,9 @@
+.env
+
 be/devices/*
 be/tmp/
+be/log.txt
+
 public/*
 macros/*
 node_modules
