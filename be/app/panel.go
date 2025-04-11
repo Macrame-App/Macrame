@@ -1,13 +1,13 @@
 package app
 
 import (
+	"be/app/helper"
 	"be/app/structs"
+	"encoding/base64"
 	"encoding/json"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -52,6 +52,8 @@ func getPanelInfo(dirname string) structs.PanelInfo {
 		}
 	}
 
+	panelInfo.Dir = dirname
+
 	thumb := getPanelThumb(dirname)
 	panelInfo.Thumb = thumb
 
@@ -59,31 +61,89 @@ func getPanelInfo(dirname string) structs.PanelInfo {
 }
 
 func getPanelThumb(dirname string) string {
-	re := regexp.MustCompile(`^thumb\.(jpg|jpeg|png)$`)
-	files, _ := os.ReadDir("../panels/" + dirname)
+	extensions := []string{".jpg", ".jpeg", ".png", ".webp"}
 
-	for _, file := range files {
-		if file.IsDir() {
+	for _, ext := range extensions {
+		filename := "thumbnail" + ext
+		file, err := os.Open("../panels/" + dirname + "/" + filename)
+		if err != nil {
 			continue
 		}
+		defer file.Close()
 
-		if re.MatchString(filepath.Base(file.Name())) {
-			return filepath.Base(file.Name())
-		}
+		return encodeImg(file)
 	}
 
 	return ""
 }
 
-func GetPanel(w http.ResponseWriter, r *http.Request) {
-	html, _ := os.ReadFile("../panels/test_panel/index.html")
-	css, _ := os.ReadFile("../panels/test_panel/output.css")
+func getPanelCode(dirname string) (html string, css string) {
+	htmlBytes, _ := os.ReadFile("../panels/" + dirname + "/index.html")
+	cssBytes, _ := os.ReadFile("../panels/" + dirname + "/output.css")
 
-	type Response struct {
-		Html string `json:"html"`
-		Css  string `json:"css"`
+	return string(htmlBytes), string(cssBytes)
+}
+
+func encodeImg(file *os.File) string {
+	contents, err := os.ReadFile(file.Name())
+	if err != nil {
+		return ""
 	}
 
-	resp := Response{Html: string(html), Css: string(css)}
-	json.NewEncoder(w).Encode(resp)
+	encoded := base64.StdEncoding.EncodeToString(contents)
+	return encoded
+}
+
+func GetPanel(data string, w http.ResponseWriter, r *http.Request) {
+	req := &structs.PanelRequest{}
+
+	_, err := helper.ParseRequest(req, data, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var response = structs.PanelResponse{}
+	// dirname := req.Dir
+	panelInfo := getPanelInfo(req.Dir)
+	panelHtml, panelCss := getPanelCode(req.Dir)
+
+	response.Dir = panelInfo.Dir
+	response.Name = panelInfo.Name
+	response.Description = panelInfo.Description
+	response.AspectRatio = panelInfo.AspectRatio
+	response.Macros = panelInfo.Macros
+	response.Thumb = panelInfo.Thumb
+	response.HTML = panelHtml
+	response.Style = panelCss
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func SavePanelJSON(w http.ResponseWriter, r *http.Request) {
+	var req structs.PanelSaveJSON
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	filePath := "../panels/" + req.Dir + "/panel.json"
+
+	req.Dir = ""
+
+	// Marshal the data to JSON without the dir field
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = os.WriteFile(filePath, jsonData, 0644)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

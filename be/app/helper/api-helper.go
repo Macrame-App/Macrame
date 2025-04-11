@@ -82,6 +82,8 @@ func decryptAuth(r *http.Request) string {
 		return ""
 	}
 
+	log.Println("data", req.Data)
+
 	deviceKey, errKey := GetKeyByUuid(req.Uuid)
 	decryptData, errDec := DecryptAES(deviceKey, req.Data)
 

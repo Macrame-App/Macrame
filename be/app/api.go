@@ -15,7 +15,6 @@ func ApiCORS(w http.ResponseWriter, r *http.Request) (http.ResponseWriter, *http
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 
 	if strings.HasPrefix(r.Host, "192.168.") {
-		log.Println("lan device")
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 	}
 
@@ -47,7 +46,6 @@ func ApiGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiPost(w http.ResponseWriter, r *http.Request) {
-
 	access, data := helper.EndpointAccess(w, r)
 
 	if !access {
@@ -84,11 +82,14 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 	case "/device/link/remove":
 		RemoveLink("", w, r)
 	case "/device/handshake":
+		log.Println("handshake")
 		Handshake(w, r)
 	case "/panel/list":
 		PanelList(w, r)
 	case "/panel/get":
-		GetPanel(w, r)
+		GetPanel("", w, r)
+	case "/panel/save/json":
+		SavePanelJSON(w, r)
 	}
 }
 
@@ -99,5 +100,7 @@ func ApiAuth(data string, w http.ResponseWriter, r *http.Request) {
 		PlayMacro(data, w, r)
 	case "/device/link/remove":
 		RemoveLink(data, w, r)
+	case "/panel/get":
+		GetPanel(data, w, r)
 	}
 }
