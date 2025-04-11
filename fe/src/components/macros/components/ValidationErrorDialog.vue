@@ -1,6 +1,6 @@
 <template>
   <div id="validation-error__dialog" class="dialog__content">
-    <h4 class="text-slate-50 mb-4">There's an error in your macro</h4>
+    <h4 class="mb-4 text-slate-50">There's an error in your macro</h4>
 
     <div class="grid gap-4" v-if="(errors && errors.up.length > 0) || errors.down.length > 0">
       <div v-if="errors.down.length > 0">
@@ -50,7 +50,6 @@ onMounted(() => {
       errors.down =
         mutation.events.newValue !== false ? macroRecorder.state.validationErrors.down : []
     }
-    console.log(mutation)
   })
 })
 </script>

@@ -2,7 +2,9 @@ import { useDeviceStore } from '@/stores/device'
 import CryptoJS from 'crypto-js'
 
 export const appUrl = () => {
-  return window.location.port !== 6970 ? `http://${window.location.hostname}:6970` : ''
+  return window.location.port !== import.meta.env.VITE_MCRM__PORT
+    ? `http://${window.location.hostname}:${import.meta.env.VITE_MCRM__PORT}`
+    : ''
 }
 
 export const isLocal = () => {

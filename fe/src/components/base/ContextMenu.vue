@@ -25,8 +25,6 @@ onMounted(() => {
 })
 
 function toggle() {
-  console.log('toggle')
-
   menuOpen.value = !menuOpen.value
 }
 </script>

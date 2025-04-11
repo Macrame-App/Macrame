@@ -5,7 +5,6 @@
       :class="`macro-recorder__input ${macroRecorder.state.record && 'record'}`"
       type="text"
       ref="macroInput"
-      @focus="console.log('focus')"
       @keydown.prevent="macroRecorder.recordStep($event, 'down')"
       @keyup.prevent="macroRecorder.recordStep($event, 'up')"
     />

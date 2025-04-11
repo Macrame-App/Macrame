@@ -13,19 +13,6 @@
 <script setup>
 import MacroOverview from '@/components/macros/MacroOverview.vue'
 import MacroRecorder from '../components/macros/MacroRecorder.vue'
-import { onMounted, ref } from 'vue'
-
-const recordMacro = ref(false)
-
-const macroInput = ref(null)
-
-onMounted(() => {
-  // macroInput.value.focus()
-})
-
-const keyDown = (e) => {
-  console.log(e)
-}
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <template>
   <div id="delete-key-dialog" class="dialog__content">
-    <h4 class="text-slate-50 mb-4">Delete key</h4>
+    <h4 class="mb-4 text-slate-50">Delete key</h4>
     <div class="flex justify-center w-full mb-4">
       <MacroKey v-if="keyObj" :key-obj="keyObj" />
     </div>
@@ -26,9 +26,6 @@ const keyObj = ref(null)
 
 onMounted(() => {
   keyObj.value = filterKey(macroRecorder.getEditKey())
-  // console.log(macroRecorder.getEditKey());
-  // console.log(keyObj.value);
-  // console.log('---------');
 })
 </script>
 

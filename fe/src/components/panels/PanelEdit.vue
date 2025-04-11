@@ -81,7 +81,7 @@ import {
   StripPanelHTML,
 } from '@/services/PanelService'
 import { usePanelStore } from '@/stores/panel'
-import { onMounted, onUnmounted, onUpdated, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import AccordionComp from '../base/AccordionComp.vue'
 import FormSelect from '../form/FormSelect.vue'
 import ButtonComp from '../base/ButtonComp.vue'
@@ -140,10 +140,6 @@ onMounted(async () => {
   EditButtonListeners()
 })
 
-onUpdated(() => {
-  console.log('updated')
-})
-
 onUnmounted(() => {
   RemovePanelStyle()
 })
@@ -190,9 +186,7 @@ function savePanelChanges() {
     macros: editPanel.value.macros,
   }
 
-  axios.post(appUrl() + '/panel/save/json', panelData).then((data) => {
-    console.log(data)
-  })
+  axios.post(appUrl() + '/panel/save/json', panelData)
 }
 </script>
 

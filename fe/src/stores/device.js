@@ -58,9 +58,7 @@ export const useDeviceStore = defineStore('device', () => {
   // Server application
   const serverGetRemotes = async (remoteUuid) => {
     axios.post(appUrl() + '/device/list', { uuid: remoteUuid }).then((data) => {
-      // console.log(data.data.devices)
       if (data.data.devices) {
-        console.log(data.data.devices)
         remote.value = data.data.devices
       }
     })

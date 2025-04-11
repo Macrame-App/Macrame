@@ -22,7 +22,9 @@
         <div class="grid gap-2">
           <strong>Access requested</strong>
           <ul class="mb-4">
-            <li>Navigate to <em class="font-semibold">http://localhost:6970/devices</em>.</li>
+            <li>
+              Navigate to <em class="font-semibold">http://localhost:{{ server.port }}/devices</em>.
+            </li>
             <li>
               <div class="inline-flex flex-wrap items-center gap-2 w-fit">
                 Click on
@@ -103,6 +105,7 @@ const linkPinInput = ref()
 
 const server = reactive({
   host: '',
+  port: import.meta.env.VITE_MCRM__PORT,
   status: false,
   link: false,
   inputPin: '',

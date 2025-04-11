@@ -176,11 +176,8 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
 
     if (state.value.validationErrors) return false
 
-    axios
-      .post(appUrl() + '/macro/record', { name: macroName.value, steps: steps.value })
-      .then((data) => {
-        console.log(data)
-      })
+    axios.post(appUrl() + '/macro/record', { name: macroName.value, steps: steps.value })
+
     return true
   }
 

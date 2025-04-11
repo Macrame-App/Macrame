@@ -18,7 +18,7 @@
 
 <script setup>
 import MainMenu from '@/components/base/MainMenu.vue'
-import { onMounted, onUpdated, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import { useDeviceStore } from './stores/device'
 import { isLocal } from './services/ApiService'
@@ -37,13 +37,9 @@ onMounted(async () => {
   const hsReq = await device.remoteHandshake()
   handshake.value = hsReq
 
-  device.$subscribe((mutation, state) => {
+  device.$subscribe(() => {
     if (device.key()) handshake.value = true
   })
-})
-
-onUpdated(() => {
-  console.log(device.key())
 })
 </script>
 

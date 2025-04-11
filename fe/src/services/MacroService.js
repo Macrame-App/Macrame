@@ -18,7 +18,5 @@ export const RunMacro = async (macro) => {
 }
 
 export const CheckMacroListChange = (oldList, newList) => {
-  console.log(oldList, JSON.stringify(newList))
-
   return oldList !== JSON.stringify(newList)
 }

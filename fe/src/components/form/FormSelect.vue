@@ -9,7 +9,6 @@
           <input
             type="search"
             ref="selectSearch"
-            @focus="console.log('focussed')"
             :list="`${name}-search__options`"
             v-model="select.search"
             @change="selectSearchValue($event)"

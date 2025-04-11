@@ -1,6 +1,6 @@
 <template>
   <div id="edit-delay-dialog" class="dialog__content">
-    <h4 class="text-slate-50 mb-4">Edit delay</h4>
+    <h4 class="mb-4 text-slate-50">Edit delay</h4>
     <div v-if="editable.delay.value" class="flex justify-center">
       <DelaySpan class="!text-lg" :value="editable.delay.value" />
     </div>
@@ -41,7 +41,6 @@ const editable = reactive({
 onMounted(() => {
   editable.delay = macroRecorder.getEditDelay()
   editable.newDelay.value = editable.delay.value
-  console.log(editable)
 })
 
 const changeDelay = () => {

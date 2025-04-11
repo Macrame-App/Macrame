@@ -54,7 +54,6 @@ const router = useRouter()
 
 onMounted(async () => {
   const panelList = await panel.getList()
-  // console.log(panelList)
 
   panels.list = panelList
 })
