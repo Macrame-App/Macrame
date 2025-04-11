@@ -48,17 +48,21 @@ func ListMacros(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	var fileNames []string
+	var macroList []structs.MacroInfo
 
 	for _, file := range files {
 		filename := filepath.Base(file.Name())
-		filename = strings.TrimSuffix(filename, filepath.Ext(filename))
-		filename = strings.Replace(filename, "_", " ", -1)
+		macroname := strings.TrimSuffix(filename, filepath.Ext(filename))
+		nicename := strings.Replace(macroname, "_", " ", -1)
 
-		fileNames = append(fileNames, filename)
+		log.Println(macroname, nicename)
+		macroList = append(macroList, structs.MacroInfo{
+			Name:      nicename,
+			Macroname: macroname,
+		})
 	}
 
-	json.NewEncoder(w).Encode(fileNames)
+	json.NewEncoder(w).Encode(macroList)
 }
 
 func DeleteMacro(w http.ResponseWriter, r *http.Request) {}

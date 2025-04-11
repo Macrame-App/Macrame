@@ -3,8 +3,8 @@
     <h4 class="border-b-2 border-transparent">Saved Macros</h4>
     <div class="macro-overview__list">
       <div class="macro-item" v-for="(macro, i) in macros.list" :key="i">
-        <ButtonComp variant="dark" class="w-full" size="sm" @click.prevent="runMacro(macro)">
-          <IconKeyboard /> {{ macro }}
+        <ButtonComp variant="dark" class="w-full" size="sm">
+          <IconKeyboard /> {{ macro.name }}
         </ButtonComp>
       </div>
     </div>
@@ -12,30 +12,26 @@
 </template>
 
 <script setup>
+// TODO
+// - load macro on click
+// - delete macro
+
 import { IconKeyboard } from '@tabler/icons-vue'
 import ButtonComp from '../base/ButtonComp.vue'
 import { onMounted, reactive } from 'vue'
 import axios from 'axios'
 import { appUrl, isLocal } from '@/services/ApiService'
 import { AuthCall } from '@/services/EncryptService'
+import { GetMacroList, RunMacro } from '@/services/MacroService'
 
 const macros = reactive({
   list: [],
 })
 
-onMounted(() => {
-  axios.post(appUrl() + '/macro/list').then((data) => {
-    if (data.data.length > 0) macros.list = data.data
-  })
+onMounted(async () => {
+  const list = await GetMacroList()
+  macros.list = list
 })
-
-function runMacro(macro) {
-  const data = isLocal() ? { macro: macro } : AuthCall({ macro: macro })
-
-  axios.post(appUrl() + '/macro/play', data).then((data) => {
-    console.log(data)
-  })
-}
 </script>
 
 <style scoped>

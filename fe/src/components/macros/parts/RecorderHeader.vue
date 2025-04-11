@@ -14,7 +14,6 @@
         <ButtonComp
           v-if="!macroRecorder.state.record"
           variant="primary"
-          size="sm"
           @click="macroRecorder.state.record = true"
         >
           <IconPlayerRecordFilled class="text-red-500" />Record
@@ -22,7 +21,6 @@
         <ButtonComp
           v-if="macroRecorder.state.record"
           variant="danger"
-          size="sm"
           @click="macroRecorder.state.record = false"
         >
           <IconPlayerStopFilled class="text-white" />Stop
@@ -37,7 +35,6 @@
         <ButtonComp
           v-if="!macroRecorder.state.edit"
           variant="secondary"
-          size="sm"
           @click="macroRecorder.state.edit = true"
         >
           <IconPencil />Edit
@@ -45,7 +42,6 @@
         <ButtonComp
           v-if="macroRecorder.state.edit"
           variant="danger"
-          size="sm"
           @click="macroRecorder.resetEdit()"
         >
           <IconPlayerStopFilled />Stop

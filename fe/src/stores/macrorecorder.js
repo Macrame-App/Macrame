@@ -130,7 +130,6 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
 
   const changeName = (name) => {
     macroName.value = name
-    console.log(macroName.value)
   }
 
   const changeDelay = (fixed) => {

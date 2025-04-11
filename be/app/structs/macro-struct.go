@@ -17,3 +17,8 @@ type NewMacro struct {
 	Name  string `json:"name"`
 	Steps []Step `json:"steps"`
 }
+
+type MacroInfo struct {
+	Name      string `json:"name"`
+	Macroname string `json:"macroname"`
+}
