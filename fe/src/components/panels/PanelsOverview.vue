@@ -89,6 +89,11 @@ function panelItemClick(dir) {
     w-full
     aspect-[4/3];
 
+    img {
+      @apply size-full
+      object-cover;
+    }
+
     &:not(:has(img)) {
       @apply bg-sky-950;
     }

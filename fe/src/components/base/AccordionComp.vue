@@ -57,7 +57,8 @@ function toggleAccordion(open = false) {
   header {
     @apply grid
     grid-cols-[1fr_auto]
-    px-4 py-2;
+    px-4 py-2
+    cursor-pointer;
   }
 
   .accordion__wrapper {

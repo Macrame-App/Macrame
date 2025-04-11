@@ -50,10 +50,19 @@ export const useDeviceStore = defineStore('device', () => {
     localStorage.removeItem('deviceKey')
   }
 
+  const serverGetIP = async () => {
+    const request = await axios.post(appUrl() + '/device/server/ip')
+    return request.data
+  }
+
   // Server application
   const serverGetRemotes = async (remoteUuid) => {
     axios.post(appUrl() + '/device/list', { uuid: remoteUuid }).then((data) => {
-      if (data.data.devices) remote.value = data.data.devices
+      // console.log(data.data.devices)
+      if (data.data.devices) {
+        console.log(data.data.devices)
+        remote.value = data.data.devices
+      }
     })
   }
 
@@ -100,6 +109,8 @@ export const useDeviceStore = defineStore('device', () => {
       shake: encryptAES(keyStr, getDateStr()),
     })
 
+    if (!handshake.data) removeDeviceKey()
+
     return handshake.data
   }
 
@@ -111,6 +122,7 @@ export const useDeviceStore = defineStore('device', () => {
     key,
     setDeviceKey,
     removeDeviceKey,
+    serverGetIP,
     serverGetRemotes,
     serverStartLink,
     remoteCheckServerAccess,

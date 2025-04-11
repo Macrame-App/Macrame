@@ -2,6 +2,7 @@
   <div class="macro-overview mcrm-block block__dark">
     <h4 class="border-b-2 border-transparent">Saved Macros</h4>
     <div class="macro-overview__list">
+      <LoadComp :loading="macros.loading" text="Loading macros..." />
       <div class="macro-item" v-for="(macro, i) in macros.list" :key="i">
         <ButtonComp variant="dark" class="w-full" size="sm">
           <IconKeyboard /> {{ macro.name }}
@@ -23,15 +24,22 @@ import axios from 'axios'
 import { appUrl, isLocal } from '@/services/ApiService'
 import { AuthCall } from '@/services/EncryptService'
 import { GetMacroList, RunMacro } from '@/services/MacroService'
+import LoadComp from '../base/LoadComp.vue'
 
 const macros = reactive({
+  loading: true,
   list: [],
 })
 
-onMounted(async () => {
+onMounted(() => {
+  loadMacroList()
+})
+
+const loadMacroList = async () => {
   const list = await GetMacroList()
   macros.list = list
-})
+  macros.loading = false
+}
 </script>
 
 <style scoped>

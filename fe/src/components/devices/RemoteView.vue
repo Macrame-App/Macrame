@@ -21,10 +21,18 @@
       <AlertComp v-if="server.status === 'unauthorized'" variant="info">
         <div class="grid gap-2">
           <strong>Access requested</strong>
-          <p>
-            Navigate to <em class="font-semibold">http://localhost:6970/devices</em> on your pc to
-            authorize.
-          </p>
+          <ul class="mb-4">
+            <li>Navigate to <em class="font-semibold">http://localhost:6970/devices</em>.</li>
+            <li>
+              <div class="inline-flex flex-wrap items-center gap-2 w-fit">
+                Click on
+                <span class="flex items-center gap-1 p-1 text-sm border rounded-sm">
+                  <IconLink class="size-4" /> Link device
+                </span>
+              </div>
+            </li>
+            <li>Enter the the pin shown on the desktop in the dialog that will appear.</li>
+          </ul>
           <template v-if="server.link == 'checking'">
             <div class="grid grid-cols-[2rem_1fr] gap-2">
               <IconReload class="animate-spin" />
@@ -53,11 +61,13 @@
           <h3>Server link pin:</h3>
           <form class="grid gap-4" @submit.prevent="decryptKey()">
             <input
+              ref="linkPinInput"
               class="input"
               id="input-pin"
               type="text"
               pattern="[0-9]{4}"
               v-model="server.inputPin"
+              autocomplete="off"
             />
             <ButtonComp variant="primary">Enter</ButtonComp>
           </form>
@@ -75,7 +85,7 @@
 // - - if checkAccess -> pingLink -> check for device.tmp (go)
 // - - if [devicePin] -> handshake -> save key local, close dialog, update server status
 
-import { IconKey, IconPlugConnectedX, IconReload, IconServer } from '@tabler/icons-vue'
+import { IconKey, IconLink, IconPlugConnectedX, IconReload, IconServer } from '@tabler/icons-vue'
 import AlertComp from '../base/AlertComp.vue'
 import ButtonComp from '../base/ButtonComp.vue'
 import { onMounted, onUpdated, reactive, ref } from 'vue'
@@ -89,6 +99,7 @@ import { appUrl } from '@/services/ApiService'
 const device = useDeviceStore()
 
 const linkPinDialog = ref()
+const linkPinInput = ref()
 
 const server = reactive({
   host: '',
@@ -105,6 +116,8 @@ onMounted(async () => {
 
 onUpdated(() => {
   if (!server.status) checkServerStatus()
+
+  if (server.status === 'authorized' && server.inputPin) server.inputPin = ''
 })
 
 async function checkServerStatus(request = true) {
@@ -150,6 +163,7 @@ function pingLink() {
     server.encryptedKey = encryptedKey
 
     linkPinDialog.value.toggleDialog(true)
+    linkPinInput.value.focus()
   })
 }
 

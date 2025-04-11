@@ -1,10 +1,7 @@
 <template>
   <div id="panels" class="panel">
     <h1 class="flex items-end justify-between !w-full panel__title">
-      <div>
-        Panels
-        <span class="text-sm">{{ isLocal() ? 'remote' : 'servers' }}</span>
-      </div>
+      <div>Panels</div>
       <ButtonComp
         v-if="panel.function != 'overview'"
         variant="subtle"

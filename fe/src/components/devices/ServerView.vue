@@ -7,10 +7,13 @@
 
     <div class="flex flex-wrap items-start gap-4 mcrm-block block__light">
       <h4 class="flex items-center justify-between w-full gap-4 mb-4">
-        <span class="flex gap-4"> <IconDevices />Remote devices </span>
+        <span class="flex gap-4" v-if="Object.keys(remote.devices).length > 0">
+          <IconDevices />{{ Object.keys(remote.devices).length }}
+          {{ Object.keys(remote.devices).length > 1 ? 'Devices' : 'Device' }}
+        </span>
+
         <ButtonComp variant="primary" @click="device.serverGetRemotes()"><IconReload /></ButtonComp>
       </h4>
-      <!-- {{ Object.keys(remote.devices).length }} -->
       <template v-if="Object.keys(remote.devices).length > 0">
         <template v-for="(remoteDevice, id) in remote.devices" :key="id">
           <div
@@ -57,6 +60,46 @@
         </div>
       </template>
 
+      <AccordionComp
+        class="w-full mt-8 border-t border-t-white/50"
+        title="How to connect a device?"
+      >
+        <div class="grid py-4">
+          <ul class="space-y-1">
+            <li>
+              To connect a device, open <strong>http://{{ server.ip }}:{{ server.port }}</strong> in
+              a browser on the device.
+            </li>
+            <li>Open the menu, and click on <strong>Server.</strong></li>
+            <li>
+              The device will automatically request access, if you see "Access requested" on the
+              device.
+            </li>
+            <li>
+              <div class="inline-flex items-center gap-2">
+                Click the
+                <span class="p-1 border rounded-sm"><IconReload class="size-4" /></span> to reload
+                the devices.
+              </div>
+            </li>
+            <li>
+              <div class="inline-flex flex-wrap items-center gap-2 w-fit">
+                Click on
+                <span class="flex items-center gap-1 p-1 text-sm border rounded-sm">
+                  <IconLink class="size-4" /> Link device
+                </span>
+                to generate a one-time-pin to link the device.
+              </div>
+            </li>
+            <li>
+              Enter the pin that is shown on this server in the dialog that will appear on the
+              device.
+            </li>
+            <li>Congratulations! You have linked a device! (Hopefully)</li>
+          </ul>
+        </div>
+      </AccordionComp>
+
       <DialogComp ref="pinDialog">
         <template #content>
           <div class="grid gap-4">
@@ -87,19 +130,29 @@ import ButtonComp from '../base/ButtonComp.vue'
 import DialogComp from '../base/DialogComp.vue'
 import axios from 'axios'
 import { appUrl } from '@/services/ApiService'
+import AccordionComp from '../base/AccordionComp.vue'
 
 const device = useDeviceStore()
 
 const pinDialog = ref()
 
+const server = reactive({
+  ip: '',
+  port: '',
+})
 const remote = reactive({ devices: [], pinlink: false })
 
-onMounted(() => {
+onMounted(async () => {
   device.serverGetRemotes()
 
   device.$subscribe((mutation, state) => {
     if (state.remote !== remote.devices) remote.devices = device.remote
   })
+
+  const serverIP = await device.serverGetIP()
+  server.ip = serverIP
+
+  server.port = import.meta.env.VITE_MCRM__PORT
 })
 
 async function startLink(deviceUuid) {

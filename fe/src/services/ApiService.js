@@ -1,3 +1,4 @@
+import { useDeviceStore } from '@/stores/device'
 import CryptoJS from 'crypto-js'
 
 export const appUrl = () => {
@@ -16,4 +17,16 @@ export const encrypt = (data, key = false) => {
   } else {
     return false
   }
+}
+
+export const checkAuth = async () => {
+  const device = useDeviceStore()
+
+  const handshake = await device.remoteHandshake()
+
+  if (handshake === true) return true
+
+  if (device.key()) return true
+
+  return false
 }
