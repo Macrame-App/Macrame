@@ -4,6 +4,6 @@ be/devices/*
 be/tmp/
 be/log.txt
 
-public/*
+public
 macros/*
 node_modules
