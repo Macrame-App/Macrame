@@ -7,6 +7,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
+	"math"
+	mathRand "math/rand"
+	"strconv"
 	"strings"
 )
 
@@ -62,7 +65,7 @@ func DecryptAES(key string, cryptedText string) (string, error) {
 	return origDataString, nil
 }
 
-func generateRandomString(length int) string {
+func GenerateRandomString(length int) string {
 	b := make([]byte, length)
 	_, err := rand.Read(b)
 	if err != nil {
@@ -71,8 +74,15 @@ func generateRandomString(length int) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
+func GenerateRandomIntegerString(length int) string {
+	min := int64(0)
+	max := int64(math.Pow10(length))
+	randInt := min + mathRand.Int63()%(max-min+1)
+	return strconv.FormatInt(randInt, 10)
+}
+
 func GenerateKey() string {
-	return strings.Replace(generateRandomString(24), "=", "", -1)
+	return strings.Replace(GenerateRandomString(24), "=", "", -1)
 }
 
 func keyToBytes(key string) []byte {

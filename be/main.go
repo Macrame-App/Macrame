@@ -10,11 +10,18 @@ import (
 func main() {
 	app.MCRMLogInit()
 
+	if helper.EnvGet("MCRM__PORT") == "" {
+		app.MCRMLog("Error: MCRM__PORT is not set")
+	}
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		apiInit(w, r)
 	})
 
+	helper.OpenBrowser("http://localhost:" + helper.EnvGet("MCRM__PORT"))
+
 	app.MCRMLog(http.ListenAndServe(":"+helper.EnvGet("MCRM__PORT"), nil))
+
 }
 
 func apiInit(w http.ResponseWriter, r *http.Request) {

@@ -39,8 +39,6 @@ func ApiGet(w http.ResponseWriter, r *http.Request) {
 		file = "../public/index.html" // default
 	}
 
-	// app.MCRMLog("GET:", file)
-
 	http.ServeFile(w, r, file) // serve file
 }
 
