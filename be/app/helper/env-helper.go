@@ -35,10 +35,11 @@ func createEnvFile(filename string) {
 	// You can add some default values to the .env file here if needed
 	// For example:
 	port, err := findOpenPort()
-	salt := GenerateRandomString(28)
+	saltKey := GenerateKey()
+	salt := saltKey[:28]
 	iv := GenerateRandomIntegerString(16)
 
-	log.Println(err, salt, iv)
+	log.Println(err, saltKey, iv)
 
 	_, err = file.WriteString("VITE_MCRM__PORT=" + string(port) + "\nVITE_MCRM__SALT=" + salt + "\nVITE_MCRM__IV=" + iv)
 	if err != nil {
