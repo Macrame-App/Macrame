@@ -16,10 +16,7 @@
       </h4>
       <template v-if="Object.keys(remote.devices).length > 0">
         <template v-for="(remoteDevice, id) in remote.devices" :key="id">
-          <div
-            v-if="id !== device.uuid()"
-            class="mcrm-block block__dark block-size__sm w-64 grid !gap-4 content-start"
-          >
+          <div class="mcrm-block block__dark block-size__sm w-64 grid !gap-4 content-start">
             <div class="grid gap-2">
               <h5 class="grid grid-cols-[auto_1fr] gap-2">
                 <IconDeviceUnknown v-if="remoteDevice.settings.type == 'unknown'" />

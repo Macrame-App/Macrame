@@ -23,10 +23,9 @@ export default defineConfig({
     },
   },
   base: '/',
-  // publicDir: "../public",
   build: {
     outDir: '../public',
-    sourcemap: false,
-    minify: false,
+    sourcemap: true,
+    minify: true,
   },
 })

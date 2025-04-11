@@ -6,7 +6,7 @@
   <MainMenu />
   <RouterView />
   <AlertComp
-    v-if="!isLocal() && !handshake && route.fullPath !== '/devices'"
+    v-if="!isLocal && !handshake && route.fullPath !== '/devices'"
     variant="warning"
     :page-wide="true"
     href="/devices"
