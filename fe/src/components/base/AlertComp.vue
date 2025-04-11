@@ -1,10 +1,15 @@
 <template>
-  <div :class="`alert alert__${type}`">
-    <IconInfoCircle v-if="type === 'info'" />
-    <IconCheck v-if="type === 'success'" />
-    <IconExclamationCircle v-if="type === 'warning'" />
-    <IconAlertTriangle v-if="type === 'error'" />
-    <slot />
+  <div
+    :class="`alert alert__${variant} ${pageWide ? 'page-wide' : ''}`"
+    @click="href ? router.push(href) : null"
+  >
+    <IconInfoCircle v-if="variant === 'info'" />
+    <IconCheck v-if="variant === 'success'" />
+    <IconExclamationCircle v-if="variant === 'warning'" />
+    <IconAlertTriangle v-if="variant === 'error'" />
+    <div class="alert__content">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -15,10 +20,15 @@ import {
   IconExclamationCircle,
   IconInfoCircle,
 } from '@tabler/icons-vue'
+import { useRouter } from 'vue-router'
 
 defineProps({
-  type: String, // info, success, warning, error
+  variant: String, // info, success, warning, error
+  pageWide: Boolean,
+  href: String,
 })
+
+const router = useRouter()
 </script>
 
 <style scoped>
@@ -50,6 +60,20 @@ defineProps({
 
   &.alert__error {
     @apply text-rose-400 bg-rose-400/10;
+  }
+
+  &.page-wide {
+    @apply fixed
+    bottom-0 left-0
+    w-full;
+  }
+
+  &[href] {
+    @apply cursor-pointer;
+  }
+
+  .alert__content {
+    @apply grid gap-2;
   }
 }
 </style>

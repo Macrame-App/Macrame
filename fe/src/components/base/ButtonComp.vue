@@ -1,8 +1,8 @@
 <template>
   <template v-if="href">
-    <a :href="href" :class="classString">
+    <RouterLink :to="href" :class="classString">
       <slot />
-    </a>
+    </RouterLink>
   </template>
   <template v-else>
     <button :class="classString">
@@ -64,12 +64,22 @@ button,
     @apply size-5 transition-[stroke] duration-400 ease-in-out;
   }
 
-  &.btn__sm svg {
-    @apply size-4;
+  &.btn__sm {
+    @apply px-3 py-1
+    text-sm;
+
+    svg {
+      @apply size-4;
+    }
   }
 
-  &.btn__lg svg {
-    @apply size-6;
+  &.btn__lg {
+    @apply px-6 py-3
+    text-lg;
+
+    svg {
+      @apply size-6;
+    }
   }
 
   &:hover {
