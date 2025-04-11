@@ -1,5 +1,6 @@
 import { useDeviceStore } from '@/stores/device'
 import { AES, enc, pad } from 'crypto-js'
+import { isLocal } from './ApiService'
 
 export const encryptAES = (key, str) => {
   key = keyPad(key)
@@ -24,6 +25,8 @@ export const decryptAES = (key, str) => {
 }
 
 export const AuthCall = (data) => {
+  if (isLocal()) return data
+
   const device = useDeviceStore()
 
   return {
