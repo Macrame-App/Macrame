@@ -15,6 +15,16 @@ const router = createRouter({
       component: () => import('../views/PanelsView.vue'),
     },
     {
+      path: '/panel/edit/:dirname',
+      name: 'panel-edit',
+      component: () => import('../views/PanelsView.vue'),
+    },
+    {
+      path: '/panel/view/:dirname',
+      name: 'panel-view',
+      component: () => import('../views/PanelsView.vue'),
+    },
+    {
       path: '/macros',
       name: 'macros',
       component: () => import('../views/MacrosView.vue'),

@@ -5,20 +5,41 @@
   </div>
   <MainMenu />
   <RouterView />
+  <AlertComp
+    v-if="!isLocal() && !handshake && route.fullPath !== '/devices'"
+    variant="warning"
+    :page-wide="true"
+    href="/devices"
+  >
+    <h4>Not authorized!</h4>
+    <p>Click here to start authorization and open the "Devices" page on your PC.</p>
+  </AlertComp>
 </template>
 
 <script setup>
 import MainMenu from '@/components/base/MainMenu.vue'
-import { onMounted } from 'vue'
-import { RouterView } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
 import { useDeviceStore } from './stores/device'
+import { isLocal } from './services/ApiService'
+import AlertComp from './components/base/AlertComp.vue'
 
 const device = useDeviceStore()
 
-onMounted(() => {
+const route = useRoute()
+const handshake = ref(false)
+
+onMounted(async () => {
+  device.uuid()
+
+  const hsReq = await device.remoteHandshake()
+  handshake.value = hsReq
+
+  device.$subscribe((mutation, state) => {
+    console.log(mutation)
+  })
   // Setting device uuid from localstorage
   // If not present in LocalStorage a new uuidV4 will be generated
-  device.uuid()
 })
 </script>
 
@@ -45,7 +66,6 @@ onMounted(() => {
     top-[10%]
     left-[10%]
     scale-[1.8]
-    p-28
     opacity-35
     mix-blend-overlay;
   }
