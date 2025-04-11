@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"be/app"
@@ -9,11 +8,13 @@ import (
 )
 
 func main() {
+	app.MCRMLogInit()
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		apiInit(w, r)
 	})
 
-	log.Println(http.ListenAndServe(":"+helper.EnvGet("MCRM__PORT"), nil))
+	app.MCRMLog(http.ListenAndServe(":"+helper.EnvGet("MCRM__PORT"), nil))
 }
 
 func apiInit(w http.ResponseWriter, r *http.Request) {

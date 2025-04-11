@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,33 +18,35 @@ func SaveMacro(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		MCRMLog("SaveMacro ReadAll Error: ", err)
+		return
 	}
-
-	log.Println(string(body))
 
 	err = json.Unmarshal(body, &newMacro)
 	if err != nil {
-		panic(err)
+		MCRMLog("SaveMacro Unmarshal Error: ", err)
+		return
 	}
 
 	stepsJSON, err := json.Marshal(newMacro.Steps)
 	if err != nil {
-		panic(err)
+		MCRMLog("SaveMacro Marshal Error: ", err)
+		return
 	}
 
 	err = os.WriteFile("../macros/"+helper.FormatMacroFileName(newMacro.Name)+".json", stepsJSON, 0644)
 	if err != nil {
-		panic(err)
+		MCRMLog("SaveMacro WriteFile Error: ", err)
+		return
 	}
 }
 
 func ListMacros(w http.ResponseWriter, r *http.Request) {
-	log.Println("listing macros")
 	dir := "../macros"
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		log.Println(err)
+		MCRMLog("ListMacros ReadDir Error: ", err)
+		return
 	}
 
 	var macroList []structs.MacroInfo
@@ -55,7 +56,6 @@ func ListMacros(w http.ResponseWriter, r *http.Request) {
 		macroname := strings.TrimSuffix(filename, filepath.Ext(filename))
 		nicename := strings.Replace(macroname, "_", " ", -1)
 
-		log.Println(macroname, nicename)
 		macroList = append(macroList, structs.MacroInfo{
 			Name:      nicename,
 			Macroname: macroname,
@@ -72,6 +72,7 @@ func PlayMacro(data string, w http.ResponseWriter, r *http.Request) {
 	_, err := helper.ParseRequest(req, data, r)
 
 	if err != nil {
+		MCRMLog("PlayMacro ParseRequest Error: ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -83,10 +84,15 @@ func PlayMacro(data string, w http.ResponseWriter, r *http.Request) {
 
 	macroFile, err := helper.ReadMacroFile(filepath)
 	if err != nil {
-		fmt.Println(err)
+		MCRMLog("PlayMacro ReadMacroFile Error: ", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	helper.RunMacroSteps(macroFile)
+	err = helper.RunMacroSteps(macroFile)
+
+	if err != nil {
+		MCRMLog("PlayMacro RunMacroSteps Error: ", err)
+		return
+	}
 }

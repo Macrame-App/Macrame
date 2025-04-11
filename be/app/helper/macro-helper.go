@@ -2,7 +2,7 @@ package helper
 
 import (
 	"encoding/json"
-	"log"
+	"errors"
 	"os"
 	"regexp"
 	"strings"
@@ -34,12 +34,10 @@ func FormatMacroFileName(s string) string {
 }
 
 func ReadMacroFile(filename string) (steps []structs.Step, err error) {
-	log.Println(filename)
-
 	content, err := os.ReadFile(filename)
 
 	if err != nil {
-		log.Fatal("Error when opening file: ", err)
+		return nil, err
 	}
 
 	err = json.Unmarshal(content, &steps)
@@ -47,18 +45,19 @@ func ReadMacroFile(filename string) (steps []structs.Step, err error) {
 	return steps, err
 }
 
-func RunMacroSteps(steps []structs.Step) {
+func RunMacroSteps(steps []structs.Step) error {
 	for _, step := range steps {
-		// log.Println(step)
 		switch step.Type {
 		case "key":
-			robotgo.KeyToggle(step.Key, step.Direction)
-			// log.Println("Toggling", step.Key, "to", step.Direction)
+			err := robotgo.KeyToggle(step.Key, step.Direction)
+			if err != nil {
+				return errors.New("RunMacroSteps KeyToggle Error: " + err.Error())
+			}
 		case "delay":
 			time.Sleep(time.Duration(step.Location) * time.Millisecond)
-			// log.Println("Sleeping for", step.Value, "milliseconds")
 		default:
-			log.Println("Unknown step type:", step.Type)
+			return errors.New("RunMacroSteps Unknown step type:" + step.Type)
 		}
 	}
+	return nil
 }

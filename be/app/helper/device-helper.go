@@ -1,25 +1,22 @@
 package helper
 
 import (
-	"log"
+	"errors"
 	"os"
 	"time"
 )
 
-func TempPinFile(Uuid string, pin string) bool {
-	log.Println("temp pin file", Uuid, pin)
+func TempPinFile(Uuid string, pin string) (bool, error) {
 	err := os.WriteFile("devices/"+Uuid+".tmp", []byte(pin), 0644)
 	if err != nil {
-		log.Println(err)
-		return false
+		return false, errors.New("TempPinFile Error: " + err.Error())
 	}
 
 	time.AfterFunc(1*time.Minute, func() {
-		log.Println("deleting", Uuid, pin)
 		os.Remove("devices/" + Uuid + ".tmp")
 	})
 
-	return true
+	return true, nil
 }
 
 func CheckPinFile(Uuid string) bool {

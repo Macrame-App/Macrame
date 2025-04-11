@@ -2,7 +2,7 @@ package helper
 
 import (
 	"encoding/json"
-	"log"
+	"errors"
 	"net"
 	"net/http"
 	"strings"
@@ -11,27 +11,27 @@ import (
 	. "be/app/structs"
 )
 
-func EndpointAccess(w http.ResponseWriter, r *http.Request) (bool, string) {
+func EndpointAccess(w http.ResponseWriter, r *http.Request) (bool, string, error) {
 	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+
 	if err != nil {
-		log.Fatal(err)
+		return false, "", errors.New(r.URL.Path + ": SplitHostPort error: " + err.Error())
 	}
 
 	if (isLocal(ip) && isEndpointAllowed("Local", r.URL.Path)) ||
 		(isLanRemote(ip) && isEndpointAllowed("Remote", r.URL.Path)) {
-		log.Println(r.URL.Path, "endpoint access: accessible")
-		return true, ""
+		return true, "", nil
 	} else if isLanRemote(ip) && isEndpointAllowed("Auth", r.URL.Path) {
-		log.Println(r.URL.Path, "endpoint access: authorized")
+		data, err := decryptAuth(r)
 
-		data := decryptAuth(r)
+		if err != nil {
+			return false, "", err
+		}
 
-		return data != "", data
+		return data != "", data, nil
 	}
 
-	log.Println(r.URL.Path, "endpoint access: not authorized or accessible")
-
-	return false, ""
+	return false, "", errors.New(r.URL.Path + ": not authorized or accessible")
 }
 
 func isLocal(ip string) bool {
@@ -45,7 +45,7 @@ func isLanRemote(ip string) bool {
 func isEndpointAllowed(source string, endpoint string) bool {
 	var endpoints, err = getAllowedEndpoints(source)
 	if err != "" {
-		log.Println(err)
+		return false
 	}
 
 	if (endpoints != nil) && (len(endpoints) > 0) {
@@ -73,25 +73,23 @@ func getAllowedEndpoints(source string) (endpoints []string, err string) {
 	return []string{}, "No allowed endpoints"
 }
 
-func decryptAuth(r *http.Request) string {
+func decryptAuth(r *http.Request) (string, error) {
 	var req structs.Authcall
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 
 	if err != nil || req.Uuid == "" || req.Data == "" {
-		return ""
+		return "", errors.New("DecryptAuth Error: " + err.Error() + "; UUID: " + req.Uuid + "; Data: " + req.Data)
 	}
-
-	log.Println("data", req.Data)
 
 	deviceKey, errKey := GetKeyByUuid(req.Uuid)
 	decryptData, errDec := DecryptAES(deviceKey, req.Data)
 
 	if errKey != nil && errDec != nil || decryptData == "" {
-		return ""
+		return "", errors.New("DecryptAuth Error: " + errKey.Error() + "; " + errDec.Error() + "; UUID: " + req.Uuid + "; Data: " + req.Data)
 	}
 
-	return decryptData
+	return decryptData, nil
 }
 
 func ParseRequest(req interface{}, data string, r *http.Request) (d interface{}, err error) {

@@ -1,7 +1,6 @@
 package helper
 
 import (
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -10,7 +9,7 @@ import (
 func EnvGet(key string) string {
 	err := godotenv.Load("../.env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		return ""
 	}
 	return os.Getenv("VITE_" + key)
 }

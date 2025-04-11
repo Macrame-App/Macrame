@@ -5,7 +5,6 @@ import (
 	"be/app/structs"
 	"encoding/base64"
 	"encoding/json"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -14,6 +13,7 @@ import (
 func PanelList(w http.ResponseWriter, r *http.Request) {
 	panelDirs, err := os.ReadDir("../panels")
 	if err != nil {
+		MCRMLog("PanelList ReadDir Error: ", err)
 		json.NewEncoder(w).Encode(false)
 		return
 	}
@@ -22,12 +22,12 @@ func PanelList(w http.ResponseWriter, r *http.Request) {
 
 	for _, panelDir := range panelDirs {
 		if panelDir.IsDir() {
-			// log.Println(getPanelInfo(panelDir.Name()))
 			panelList = append(panelList, getPanelInfo(panelDir.Name()))
 		}
 	}
 
 	if len(panelList) == 0 {
+		MCRMLog("PanelList: No panels found")
 		json.NewEncoder(w).Encode(false)
 		return
 	}
@@ -48,7 +48,7 @@ func getPanelInfo(dirname string) structs.PanelInfo {
 	} else {
 		err = json.Unmarshal(jsonFile, &panelInfo)
 		if err != nil {
-			log.Println(err)
+			MCRMLog("getPanelInfo Unmarshal Error: ", err)
 		}
 	}
 
@@ -67,6 +67,7 @@ func getPanelThumb(dirname string) string {
 		filename := "thumbnail" + ext
 		file, err := os.Open("../panels/" + dirname + "/" + filename)
 		if err != nil {
+			MCRMLog("getPanelThumb Open Error: ", err)
 			continue
 		}
 		defer file.Close()
@@ -87,6 +88,7 @@ func getPanelCode(dirname string) (html string, css string) {
 func encodeImg(file *os.File) string {
 	contents, err := os.ReadFile(file.Name())
 	if err != nil {
+		MCRMLog("encodeImg ReadFile Error: ", err)
 		return ""
 	}
 
@@ -99,12 +101,13 @@ func GetPanel(data string, w http.ResponseWriter, r *http.Request) {
 
 	_, err := helper.ParseRequest(req, data, r)
 	if err != nil {
+		MCRMLog("GetPanel ParseRequest Error: ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	var response = structs.PanelResponse{}
-	// dirname := req.Dir
+
 	panelInfo := getPanelInfo(req.Dir)
 	panelHtml, panelCss := getPanelCode(req.Dir)
 
@@ -124,6 +127,7 @@ func SavePanelJSON(w http.ResponseWriter, r *http.Request) {
 	var req structs.PanelSaveJSON
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
+		MCRMLog("SavePanelJSON Decode Error: ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -135,12 +139,14 @@ func SavePanelJSON(w http.ResponseWriter, r *http.Request) {
 	// Marshal the data to JSON without the dir field
 	jsonData, err := json.Marshal(req)
 	if err != nil {
+		MCRMLog("SavePanelJSON Marshal Error: ", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = os.WriteFile(filePath, jsonData, 0644)
 	if err != nil {
+		MCRMLog("SavePanelJSON WriteFile Error: ", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

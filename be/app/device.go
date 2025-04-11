@@ -5,7 +5,6 @@ import (
 	"be/app/structs"
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"net"
 	"net/http"
@@ -18,12 +17,12 @@ import (
 func GetServerIP(w http.ResponseWriter, r *http.Request) {
 	ifs, err := net.Interfaces()
 	if err != nil {
-		log.Println(err)
+		MCRMLog(err)
 	}
 	for _, ifi := range ifs {
 		addrs, err := ifi.Addrs()
 		if err != nil {
-			log.Println(err)
+			MCRMLog(err)
 		}
 		for _, addr := range addrs {
 			var ip net.IP
@@ -44,11 +43,10 @@ func GetServerIP(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeviceList(w http.ResponseWriter, r *http.Request) {
-	log.Println("device list")
 	dir := "devices"
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		log.Fatal(err)
+		MCRMLog("DeviceList Error: ", err)
 	}
 
 	devices := make(map[string]map[string]interface{})
@@ -57,8 +55,6 @@ func DeviceList(w http.ResponseWriter, r *http.Request) {
 		filePath := dir + "/" + file.Name()
 		ext := filepath.Ext(filePath)
 		device := strings.TrimSuffix(file.Name(), ext)
-
-		// log.Println(device, ext)
 
 		if _, ok := devices[device]; !ok {
 			devices[device] = make(map[string]interface{})
@@ -76,32 +72,30 @@ func DeviceList(w http.ResponseWriter, r *http.Request) {
 		"devices": devices,
 	}
 
-	log.Println(result)
-
 	json.NewEncoder(w).Encode(result)
 }
 
 func readDeviceSettings(filepath string) (settings structs.Settings) {
 	data, err := os.ReadFile(filepath)
 	if err != nil {
-		log.Println(err)
+		MCRMLog("readDeviceSettings Error: ", err)
 	}
 
 	err = json.Unmarshal(data, &settings)
 	if err != nil {
-		log.Println(err)
+		MCRMLog("readDeviceSettings JSON Error: ", err)
 	}
-	log.Println(settings)
+
 	return settings
 }
 
 func DeviceAccessCheck(w http.ResponseWriter, r *http.Request) {
-	log.Println("device access check")
 	var req structs.Check
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 
 	if err != nil {
+		MCRMLog("DeviceAccessCheck Error: ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -110,13 +104,12 @@ func DeviceAccessCheck(w http.ResponseWriter, r *http.Request) {
 	_, errKey := os.Stat("devices/" + req.Uuid + ".key")
 
 	if (errSett == nil) && (errKey == nil) {
-		log.Println("authorized")
 		json.NewEncoder(w).Encode("authorized")
 	} else if (errSett == nil) && (errKey != nil) {
-		log.Println("unauthorized")
+		MCRMLog("DeviceAccessCheck: UUID: ", req.Uuid, "; Access: Unauthorized")
 		json.NewEncoder(w).Encode("unauthorized")
 	} else {
-		log.Println("unauthorized")
+		MCRMLog("DeviceAccessCheck: UUID: ", req.Uuid, "; Access: Unlinked")
 		json.NewEncoder(w).Encode("unlinked")
 	}
 
@@ -137,14 +130,14 @@ func DeviceAccessRequest(w http.ResponseWriter, r *http.Request) {
 
 	settingsJSON, err := json.Marshal(deviceSettings)
 	if err != nil {
-		log.Println(err)
+		MCRMLog("DeviceAccessRequest JSON Error: ", err)
 		return
 	}
 
 	err = os.WriteFile("devices/"+req.Uuid+".json", settingsJSON, 0644)
 
 	if err != nil {
-		log.Println(err)
+		MCRMLog("DeviceAccessRequest Error: ", err)
 		return
 	}
 
@@ -152,11 +145,11 @@ func DeviceAccessRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func PingLink(w http.ResponseWriter, r *http.Request) {
-	log.Println("ping link")
 	var req structs.Check
 	err := json.NewDecoder(r.Body).Decode(&req)
 
 	if err != nil {
+		MCRMLog("PingLink Error: ", err)
 		json.NewEncoder(w).Encode(false)
 		return
 	}
@@ -166,24 +159,24 @@ func PingLink(w http.ResponseWriter, r *http.Request) {
 
 	encryptedKey, encErr := helper.EncryptAES(string(pin), string(key))
 
-	log.Println(encryptedKey, string(pin), string(key))
-
 	if keyErr == nil && pinErr == nil && encErr == nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(encryptedKey))
 		return
+	} else {
+		MCRMLog("PingLink Error: keyErr:", keyErr, "; pinErr:", pinErr, "; encErr:", encErr)
 	}
 
 	json.NewEncoder(w).Encode(false)
 }
 
 func StartLink(w http.ResponseWriter, r *http.Request) {
-	log.Println("start link")
 	var req structs.Check
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 
 	if err != nil {
+		MCRMLog("StartLink Error: ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -192,10 +185,13 @@ func StartLink(w http.ResponseWriter, r *http.Request) {
 
 	deviceKey := helper.GenerateKey()
 
-	err = helper.SaveDeviceKey(req.Uuid, deviceKey)
+	errKey := helper.SaveDeviceKey(req.Uuid, deviceKey)
+	savedPin, errPin := helper.TempPinFile(req.Uuid, pin)
 
-	if err == nil && helper.TempPinFile(req.Uuid, pin) {
+	if errKey == nil && errPin == nil && savedPin == true {
 		json.NewEncoder(w).Encode(pin)
+	} else {
+		MCRMLog("StartLink Error: errKey:", err, "; errPin:", err)
 	}
 
 	return
@@ -224,6 +220,7 @@ func RemoveLink(data string, w http.ResponseWriter, r *http.Request) {
 	_, err := helper.ParseRequest(req, data, r)
 
 	if err != nil {
+		MCRMLog("RemoveLink ParseRequest Error: ", err)
 		json.NewEncoder(w).Encode(false)
 		return
 	}
@@ -231,6 +228,7 @@ func RemoveLink(data string, w http.ResponseWriter, r *http.Request) {
 	err = os.Remove("devices/" + req.Uuid + ".key")
 
 	if err != nil {
+		MCRMLog("RemoveLink Remove Error: ", err)
 		json.NewEncoder(w).Encode(false)
 		return
 	}
@@ -250,6 +248,7 @@ func Handshake(w http.ResponseWriter, r *http.Request) {
 	deviceKey, err := helper.GetKeyByUuid(req.Uuid)
 
 	if err != nil {
+		MCRMLog("Handshake GetKeyByUuid Error: ", err)
 		json.NewEncoder(w).Encode(false)
 		return
 	}

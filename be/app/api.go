@@ -2,7 +2,6 @@ package app
 
 import (
 	"be/app/helper"
-	"log"
 	"mime"
 	"net/http"
 	"path/filepath"
@@ -40,19 +39,19 @@ func ApiGet(w http.ResponseWriter, r *http.Request) {
 		file = "../public/index.html" // default
 	}
 
-	// log.Println("GET:", file)
+	// app.MCRMLog("GET:", file)
 
 	http.ServeFile(w, r, file) // serve file
 }
 
 func ApiPost(w http.ResponseWriter, r *http.Request) {
-	access, data := helper.EndpointAccess(w, r)
+	access, data, err := helper.EndpointAccess(w, r)
 
-	if !access {
+	if !access || err != nil {
+		MCRMLog("ApiPost EndPointAccess Error: ", err)
 		return
 	}
 
-	log.Println("api post", data == "")
 	if data != "" {
 		ApiAuth(data, w, r)
 		return
@@ -95,7 +94,6 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiAuth(data string, w http.ResponseWriter, r *http.Request) {
-	log.Println("apiauth", data != "")
 	switch r.URL.Path {
 	case "/macro/play":
 		PlayMacro(data, w, r)
