@@ -1,9 +1,9 @@
 <template>
   <div id="devices-view" class="panel">
     <h1 class="panel__title">
-      Devices <span class="text-sm">{{ isLocal() ? 'remote' : 'servers' }}</span>
+      {{ isLocal() ? 'Remote devices' : 'Server' }}
     </h1>
-    <div class="panel__content grid gap-8">
+    <div class="grid gap-8 pr-2 panel__content">
       <ServerView v-if="isLocal()" />
       <RemoteView v-else />
     </div>

@@ -90,12 +90,15 @@ export const useDeviceStore = defineStore('device', () => {
     }, 1000)
   }
 
-  const remoteHandshake = async (key) => {
+  const remoteHandshake = async (keyStr = false) => {
+    if (!keyStr) keyStr = key()
+
+    if (!keyStr) return false
+
     const handshake = await axios.post(appUrl() + '/device/handshake', {
       uuid: uuid(),
-      shake: encryptAES(key, getDateStr()),
+      shake: encryptAES(keyStr, getDateStr()),
     })
-    console.log(handshake)
 
     return handshake.data
   }

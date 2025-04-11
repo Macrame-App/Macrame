@@ -1,63 +1,67 @@
 <template>
   <div class="device-overview">
-    <AlertComp type="info">
-      <div class="grid">
-        <strong>This is a server!</strong>
-        <em>UUID: {{ device.uuid() }} </em>
-      </div>
+    <AlertComp variant="info">
+      <strong>This is a server!</strong>
+      <em>UUID: {{ device.uuid() }} </em>
     </AlertComp>
 
-    <div class="mcrm-block block__light flex flex-wrap items-start gap-4">
-      <h4 class="w-full flex gap-4 items-center justify-between mb-4">
+    <div class="flex flex-wrap items-start gap-4 mcrm-block block__light">
+      <h4 class="flex items-center justify-between w-full gap-4 mb-4">
         <span class="flex gap-4"> <IconDevices />Remote devices </span>
         <ButtonComp variant="primary" @click="device.serverGetRemotes()"><IconReload /></ButtonComp>
       </h4>
       <!-- {{ Object.keys(remote.devices).length }} -->
       <template v-if="Object.keys(remote.devices).length > 0">
-        <div
-          class="mcrm-block block__dark block-size__sm w-64 grid !gap-4 content-start"
-          v-for="(remoteDevice, id) in remote.devices"
-          :key="id"
-        >
-          <div class="grid gap-2">
-            <h5 class="grid grid-cols-[auto_1fr] gap-2">
-              <IconDeviceUnknown v-if="remoteDevice.settings.type == 'unknown'" />
-              <IconDeviceMobile v-if="remoteDevice.settings.type == 'mobile'" />
-              <IconDeviceTablet v-if="remoteDevice.settings.type == 'tablet'" />
-              <IconDeviceDesktop v-if="remoteDevice.settings.type == 'desktop'" />
-              <span class="w-full truncate">
-                {{ remoteDevice.settings.name }}
-              </span>
-            </h5>
-            <em>{{ id }}</em>
+        <template v-for="(remoteDevice, id) in remote.devices" :key="id">
+          <div
+            v-if="id !== device.uuid()"
+            class="mcrm-block block__dark block-size__sm w-64 grid !gap-4 content-start"
+          >
+            <div class="grid gap-2">
+              <h5 class="grid grid-cols-[auto_1fr] gap-2">
+                <IconDeviceUnknown v-if="remoteDevice.settings.type == 'unknown'" />
+                <IconDeviceMobile v-if="remoteDevice.settings.type == 'mobile'" />
+                <IconDeviceTablet v-if="remoteDevice.settings.type == 'tablet'" />
+                <IconDeviceDesktop v-if="remoteDevice.settings.type == 'desktop'" />
+                <span class="w-full truncate">
+                  {{ remoteDevice.settings.name }}
+                </span>
+              </h5>
+              <em>{{ id }}</em>
+            </div>
+
+            <template v-if="remoteDevice.key">
+              <AlertComp variant="success">Authorized</AlertComp>
+              <ButtonComp variant="danger" @click="unlinkDevice(id)">
+                <IconLinkOff />Unlink device
+              </ButtonComp>
+            </template>
+
+            <template v-else>
+              <AlertComp variant="warning">Unauthorized</AlertComp>
+              <ButtonComp variant="primary" @click="startLink(id)">
+                <IconLink />Link device
+              </ButtonComp>
+            </template>
+
+            <template v-if="remote.pinlink.uuid == id">
+              <AlertComp variant="info">One time pin: {{ remote.pinlink.pin }}</AlertComp>
+            </template>
           </div>
-          <template v-if="remoteDevice.key">
-            <AlertComp type="success">Authorized</AlertComp>
-            <ButtonComp variant="danger" @click="unlinkDevice(id)">
-              <IconLinkOff />Unlink device
-            </ButtonComp>
-          </template>
-          <template v-else>
-            <AlertComp type="warning">Unauthorized</AlertComp>
-            <ButtonComp variant="primary" @click="startLink(id)">
-              <IconLink />Link device
-            </ButtonComp>
-          </template>
-          <template v-if="remote.pinlink.uuid == id">
-            <AlertComp type="info">One time pin: {{ remote.pinlink.pin }}</AlertComp>
-          </template>
-        </div>
+        </template>
       </template>
+
       <template v-else>
         <div class="grid w-full gap-4">
           <em class="text-slate-300">No remote devices</em>
         </div>
       </template>
+
       <DialogComp ref="pinDialog">
         <template #content>
           <div class="grid gap-4">
             <h3>Pin code</h3>
-            <span class="text-4xl font-mono tracking-wide">{{ remote.pinlink.pin }}</span>
+            <span class="font-mono text-4xl tracking-wide">{{ remote.pinlink.pin }}</span>
           </div>
         </template>
       </DialogComp>
@@ -66,11 +70,6 @@
 </template>
 
 <script setup>
-// TODO
-// - startLink -> responsePin also in device block
-// - startLink -> poll removal of pin file, if removed close dialog, update device list
-// - Make unlink work
-
 import { onMounted, reactive, ref } from 'vue'
 import AlertComp from '../base/AlertComp.vue'
 import { useDeviceStore } from '@/stores/device'
@@ -99,7 +98,7 @@ onMounted(() => {
   device.serverGetRemotes()
 
   device.$subscribe((mutation, state) => {
-    if (Object.keys(state.remote).length) remote.devices = device.remote
+    if (state.remote !== remote.devices) remote.devices = device.remote
   })
 })
 

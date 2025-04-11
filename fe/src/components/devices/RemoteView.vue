@@ -1,14 +1,12 @@
 <template>
   <div class="server-overview">
-    <AlertComp type="info">
-      <div class="grid">
-        <strong>This is a remote device.</strong>
-        <em>UUID: {{ device.uuid() }} </em>
-      </div>
+    <AlertComp variant="info">
+      <strong>This is a remote device.</strong>
+      <em>UUID: {{ device.uuid() }} </em>
     </AlertComp>
 
-    <div class="mcrm-block block__light grid gap-4">
-      <h4 class="text-lg flex gap-4 items-center justify-between">
+    <div class="grid gap-4 mcrm-block block__light">
+      <h4 class="flex items-center justify-between gap-4 text-lg">
         <span class="flex gap-4"><IconServer />Server</span>
         <ButtonComp variant="primary" @click="checkServerStatus()"><IconReload /></ButtonComp>
       </h4>
@@ -18,9 +16,9 @@
       </p>
 
       <!-- Alerts -->
-      <AlertComp v-if="server.status === 'authorized'" type="success">Authorized</AlertComp>
-      <AlertComp v-if="server.status === 'unlinked'" type="warning">Not linked</AlertComp>
-      <AlertComp v-if="server.status === 'unauthorized'" type="info">
+      <AlertComp v-if="server.status === 'authorized'" variant="success">Authorized</AlertComp>
+      <AlertComp v-if="server.status === 'unlinked'" variant="warning">Not linked</AlertComp>
+      <AlertComp v-if="server.status === 'unauthorized'" variant="info">
         <div class="grid gap-2">
           <strong>Access requested</strong>
           <p>
@@ -41,14 +39,6 @@
         </div>
       </AlertComp>
       <ButtonComp
-        v-if="server.status === 'unauthorized'"
-        variant="primary"
-        @click="requestAccess()"
-      >
-        <IconKey />
-        Request access
-      </ButtonComp>
-      <ButtonComp
         variant="danger"
         v-if="server.status === 'authorized'"
         @click="disonnectFromServer()"
@@ -59,7 +49,7 @@
     </div>
     <DialogComp ref="linkPinDialog">
       <template #content>
-        <div class="grid gap-4 w-64">
+        <div class="grid w-64 gap-4">
           <h3>Server link pin:</h3>
           <form class="grid gap-4" @submit.prevent="decryptKey()">
             <input
