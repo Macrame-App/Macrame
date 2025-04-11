@@ -22,6 +22,7 @@ var Endpoints = Allowed{
 		"/device/handshake",
 		"/panel/get",
 		"/panel/list",
+		"/panel/save/json",
 	},
 	Remote: []string{
 		"/macro/list",
@@ -31,9 +32,12 @@ var Endpoints = Allowed{
 		"/device/link/end",
 		"/device/handshake",
 		"/device/auth",
+		"/panel/list",
+		// "/panel/get",
 	},
 	Auth: []string{
 		"/macro/play",
 		"/device/link/remove",
+		"/panel/get",
 	},
 }
