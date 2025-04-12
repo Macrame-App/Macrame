@@ -34,7 +34,7 @@ onMounted(() => {
   // If not present in LocalStorage a new uuidV4 will be generated
   device.uuid()
 
-  appHandshake()
+  if (!isLocal) appHandshake()
 
   device.$subscribe(() => {
     if (device.key()) handshake.value = true
