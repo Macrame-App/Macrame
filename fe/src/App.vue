@@ -23,7 +23,6 @@ import { RouterView, useRoute } from 'vue-router'
 import { useDeviceStore } from './stores/device'
 import { isLocal } from './services/ApiService'
 import AlertComp from './components/base/AlertComp.vue'
-import { ConfigGet } from './services/ConfigService'
 
 const device = useDeviceStore()
 
@@ -31,14 +30,11 @@ const route = useRoute()
 const handshake = ref(false)
 
 onMounted(() => {
-  // const port = await ConfigGet('MCRM__PORT')
-  // console.log(port)
-
   // Setting device uuid from localstorage
   // If not present in LocalStorage a new uuidV4 will be generated
   device.uuid()
 
-  // appHandshake()
+  appHandshake()
 
   device.$subscribe(() => {
     if (device.key()) handshake.value = true
