@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -50,19 +49,20 @@ func RunMacroSteps(steps []map[string]interface{}) error {
 		switch step["type"] {
 		case "key":
 			keyCode := step["code"].(string)
+
 			if strings.Contains(keyCode, "|") {
 				keyCode = handleToggleCode(keyCode, step["direction"].(string))
 			}
-			log.Println("keycode", keyCode, step["direction"].(string))
+
 			robotgo.KeyToggle(keyCode, step["direction"].(string))
 		case "delay":
-			log.Println("delay", step["value"].(float64))
+
 			time.Sleep(time.Duration(step["value"].(float64)) * time.Millisecond)
+
 		default:
 			return errors.New("RunMacroSteps Unknown step type: %v" + fmt.Sprint(step["type"]))
 		}
 	}
-	log.Println("-----")
 	return nil
 }
 

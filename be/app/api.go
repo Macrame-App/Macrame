@@ -2,7 +2,6 @@ package app
 
 import (
 	"be/app/helper"
-	"log"
 	"mime"
 	"net/http"
 	"path/filepath"
@@ -30,8 +29,6 @@ func ApiGet(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		file = "../public" + r.URL.Path // request
 	}
-
-	log.Println("ApiGet file: ", file)
 
 	contentType := mime.TypeByExtension(filepath.Ext(file)) // get content type
 

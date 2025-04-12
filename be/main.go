@@ -16,13 +16,12 @@ func main() {
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("HANDLEFUNC", r.URL.Path)
 		apiInit(w, r)
 	})
 
 	log.Println("Listening on http://localhost:" + helper.EnvGet("MCRM__PORT"))
 
-	// helper.OpenBrowser("http://localhost:" + helper.EnvGet("MCRM__PORT"))
+	helper.OpenBrowser("http://localhost:" + helper.EnvGet("MCRM__PORT"))
 
 	app.MCRMLog(http.ListenAndServe(":"+helper.EnvGet("MCRM__PORT"), nil))
 

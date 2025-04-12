@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -39,8 +38,6 @@ func SaveMacro(w http.ResponseWriter, r *http.Request) {
 		MCRMLog("SaveMacro Marshal Error: ", err)
 		return
 	}
-
-	log.Println(simplifiedSteps)
 
 	err = os.WriteFile("../macros/"+helper.FormatMacroFileName(newMacro.Name)+".json", stepsJSON, 0644)
 	if err != nil {
@@ -111,7 +108,9 @@ func PlayMacro(data string, w http.ResponseWriter, r *http.Request) {
 	}
 
 	macro := req.Macro
-	log.Println("PlayMacro: ", macro)
+
+	MCRMLog("Playing Macro: ", macro)
+
 	var filename = helper.FormatMacroFileName(macro)
 	var filepath = fmt.Sprintf("../macros/%s.json", filename)
 

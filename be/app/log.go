@@ -16,7 +16,7 @@ func MCRMLogInit() {
 	}
 
 	// Optionally set log to write to file in addition to standard log output
-	// log.SetOutput(logFile)
+	log.SetOutput(logFile)
 }
 
 func MCRMLog(v ...interface{}) {
