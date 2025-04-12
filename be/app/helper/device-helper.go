@@ -19,6 +19,8 @@ func TempPinFile(Uuid string, pin string) (bool, error) {
 	return true, nil
 }
 
+func RemovePinFile(Uuid string) error { return os.Remove("devices/" + Uuid + ".tmp") }
+
 func CheckPinFile(Uuid string) bool {
 	_, err := os.Stat("devices/" + Uuid + ".tmp")
 	return err == nil

@@ -3,12 +3,12 @@ package helper
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"log"
 	"os"
 	"regexp"
 	"strings"
 	"time"
-
-	"be/app/structs"
 
 	"github.com/go-vgo/robotgo"
 )
@@ -33,7 +33,7 @@ func FormatMacroFileName(s string) string {
 	return s
 }
 
-func ReadMacroFile(filename string) (steps []structs.Step, err error) {
+func ReadMacroFile(filename string) (steps []map[string]interface{}, err error) {
 	content, err := os.ReadFile(filename)
 
 	if err != nil {
@@ -45,19 +45,48 @@ func ReadMacroFile(filename string) (steps []structs.Step, err error) {
 	return steps, err
 }
 
-func RunMacroSteps(steps []structs.Step) error {
+func RunMacroSteps(steps []map[string]interface{}) error {
 	for _, step := range steps {
-		switch step.Type {
+		switch step["type"] {
 		case "key":
-			err := robotgo.KeyToggle(step.Key, step.Direction)
-			if err != nil {
-				return errors.New("RunMacroSteps KeyToggle Error: " + err.Error())
+			keyCode := step["code"].(string)
+			if strings.Contains(keyCode, "|") {
+				keyCode = handleToggleCode(keyCode, step["direction"].(string))
 			}
+			log.Println("keycode", keyCode, step["direction"].(string))
+			robotgo.KeyToggle(keyCode, step["direction"].(string))
 		case "delay":
-			time.Sleep(time.Duration(step.Location) * time.Millisecond)
+			log.Println("delay", step["value"].(float64))
+			time.Sleep(time.Duration(step["value"].(float64)) * time.Millisecond)
 		default:
-			return errors.New("RunMacroSteps Unknown step type:" + step.Type)
+			return errors.New("RunMacroSteps Unknown step type: %v" + fmt.Sprint(step["type"]))
 		}
 	}
+	log.Println("-----")
 	return nil
+}
+
+var toggleCodes = map[string]bool{}
+
+func handleToggleCode(keyCode string, direction string) string {
+	splitCodes := strings.Split(keyCode, "|")
+
+	if direction == "down" {
+		if _, ok := toggleCodes[splitCodes[0]]; !ok {
+			toggleCodes[splitCodes[0]] = true
+			return splitCodes[0]
+		}
+		return splitCodes[1]
+	}
+
+	if direction == "up" {
+		if toggleCodes[splitCodes[0]] {
+			toggleCodes[splitCodes[0]] = false
+			return splitCodes[0]
+		}
+		delete(toggleCodes, splitCodes[0])
+		return splitCodes[1]
+	}
+
+	return ""
 }

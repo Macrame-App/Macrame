@@ -157,9 +157,13 @@ func PingLink(w http.ResponseWriter, r *http.Request) {
 	key, keyErr := os.ReadFile("devices/" + req.Uuid + ".key")
 	pin, pinErr := os.ReadFile("devices/" + req.Uuid + ".tmp")
 
+	// MCRMLog("PingLink UUID: ", req.Uuid)
+	// MCRMLog("PingLink Key: ", string(key), "; Pin: ", string(pin))
+
 	encryptedKey, encErr := helper.EncryptAES(string(pin), string(key))
 
 	if keyErr == nil && pinErr == nil && encErr == nil {
+		MCRMLog("PINGLINK FIXED")
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(encryptedKey))
 		return
@@ -255,9 +259,9 @@ func Handshake(w http.ResponseWriter, r *http.Request) {
 
 	decryptShake, _ := helper.DecryptAES(deviceKey, req.Shake)
 
-	if decryptShake == getDateStr() {
-		os.Remove("devices/" + req.Uuid + ".tmp")
+	helper.RemovePinFile(req.Uuid)
 
+	if decryptShake == getDateStr() {
 		json.NewEncoder(w).Encode(true)
 		return
 	} else {

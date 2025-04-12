@@ -1,49 +1,92 @@
 package helper
 
 import (
+	"encoding/json"
 	"log"
 	"net"
 	"os"
 	"strconv"
-
-	"github.com/joho/godotenv"
+	"strings"
 )
 
+var configPath = "../public/config.js"
+
 func EnvGet(key string) string {
-	envFile := "../.env"
-	fileExists := func() bool {
-		_, err := os.Stat(envFile)
-		return err == nil
+	if !configFileExists() {
+		createConfigFile(configPath)
+		checkFeDevDir()
 	}
-	if !fileExists() {
-		createEnvFile(envFile)
-	}
-	err := godotenv.Load(envFile)
+
+	data, err := os.ReadFile(configPath)
 	if err != nil {
+		log.Println("Error reading config.js:", err)
 		return ""
 	}
-	return os.Getenv("VITE_" + key)
+
+	raw := strings.TrimSpace(string(data))
+	raw = strings.TrimPrefix(raw, "window.__CONFIG__ = ")
+	raw = strings.TrimSuffix(raw, ";")
+
+	var config map[string]string
+	if err := json.Unmarshal([]byte(raw), &config); err != nil {
+		log.Println("Error parsing config.js:", err)
+		return ""
+	}
+
+	return config[key]
 }
 
-func createEnvFile(filename string) {
-	log.Println("Creating .env file...")
-	file, err := os.Create(filename)
+func configFileExists() bool {
+	_, err := os.Stat(configPath)
+	return err == nil
+}
+
+func checkFeDevDir() {
+	_, err := os.Stat("../fe")
+
 	if err != nil {
-		log.Println(err)
+		return
 	}
-	defer file.Close()
-	// You can add some default values to the .env file here if needed
-	// For example:
-	port, err := findOpenPort()
+
+	copyConfigToFe()
+}
+
+func copyConfigToFe() {
+	data, err := os.ReadFile("../public/config.js")
+
+	if err != nil {
+		log.Println("Error reading config.js:", err)
+		return
+	}
+
+	if err := os.WriteFile("../fe/config.js", data, 0644); err != nil {
+		log.Println("Error writing config.js:", err)
+	}
+}
+
+func createConfigFile(filename string) {
+	port, _ := findOpenPort()
 	saltKey := GenerateKey()
 	salt := saltKey[:28]
 	iv := GenerateRandomIntegerString(16)
 
-	log.Println(err, saltKey, iv)
+	config := map[string]string{
+		"MCRM__PORT": port,
+		"MCRM__SALT": salt,
+		"MCRM__IV":   iv,
+	}
 
-	_, err = file.WriteString("VITE_MCRM__PORT=" + string(port) + "\nVITE_MCRM__SALT=" + salt + "\nVITE_MCRM__IV=" + iv)
+	jsonData, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error creating config JSON:", err)
+		return
+	}
+	jsData := "window.__CONFIG__ = " + string(jsonData) + ";"
+
+	log.Println("Created JS config:", jsData)
+
+	if err := os.WriteFile(filename, []byte(jsData), 0644); err != nil {
+		log.Println("Error writing config.js:", err)
 	}
 }
 

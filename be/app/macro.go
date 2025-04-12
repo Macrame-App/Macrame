@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -28,11 +29,18 @@ func SaveMacro(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stepsJSON, err := json.Marshal(newMacro.Steps)
+	simplifiedSteps := make([]map[string]interface{}, 0)
+	for _, step := range newMacro.Steps {
+		simplifiedSteps = append(simplifiedSteps, simplifyMacro(step))
+	}
+
+	stepsJSON, err := json.Marshal(simplifiedSteps)
 	if err != nil {
 		MCRMLog("SaveMacro Marshal Error: ", err)
 		return
 	}
+
+	log.Println(simplifiedSteps)
 
 	err = os.WriteFile("../macros/"+helper.FormatMacroFileName(newMacro.Name)+".json", stepsJSON, 0644)
 	if err != nil {
@@ -41,11 +49,36 @@ func SaveMacro(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func simplifyMacro(step structs.Step) map[string]interface{} {
+	simplified := make(map[string]interface{})
+
+	simplified["type"] = step.Type
+
+	switch step.Type {
+	case "delay":
+		simplified["value"] = step.Value
+	case "key":
+		keyCode := step.Code
+
+		if keyCode == "" {
+			keyCode = step.Key
+		} else if strings.Contains(keyCode, "Key") {
+			keyCode = strings.Replace(keyCode, "Key", "", 1)
+		}
+
+		simplified["code"] = helper.Translate(keyCode)
+		simplified["direction"] = step.Direction
+	}
+
+	return simplified
+}
+
 func ListMacros(w http.ResponseWriter, r *http.Request) {
 	dir := "../macros"
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		MCRMLog("ListMacros ReadDir Error: ", err)
+		json.NewEncoder(w).Encode(false)
 		return
 	}
 
@@ -78,7 +111,7 @@ func PlayMacro(data string, w http.ResponseWriter, r *http.Request) {
 	}
 
 	macro := req.Macro
-
+	log.Println("PlayMacro: ", macro)
 	var filename = helper.FormatMacroFileName(macro)
 	var filepath = fmt.Sprintf("../macros/%s.json", filename)
 

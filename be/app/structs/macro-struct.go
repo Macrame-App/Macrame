@@ -22,3 +22,16 @@ type MacroInfo struct {
 	Name      string `json:"name"`
 	Macroname string `json:"macroname"`
 }
+
+type MacroKey struct {
+	Type      string `json:"type"`
+	Key       string `json:"key"`
+	Code      string `json:"code"`
+	Location  int    `json:"location"`
+	Direction string `json:"direction"`
+}
+
+type MacroDelay struct {
+	Type  string `json:"type"`
+	Value int    `json:"value"`
+}
