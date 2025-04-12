@@ -4,8 +4,8 @@
       {{ isLocal() ? 'Remote devices' : 'Server' }}
     </h1>
     <div class="grid gap-8 pr-2 panel__content">
-      <ServerView />
-      <RemoteView />
+      <ServerView v-if="isLocal()" />
+      <RemoteView v-else />
     </div>
   </div>
 </template>

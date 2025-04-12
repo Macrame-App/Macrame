@@ -85,8 +85,6 @@ export const useDeviceStore = defineStore('device', () => {
     return request
   }
   const remotePingLink = async (cb) => {
-    // const linkRequest = await axios.post(appUrl() + '/device/link/ping', { uuid: deviceUuid })
-    // if (linkRequest.data)
     const pingInterval = setInterval(() => {
       axios.post(appUrl() + '/device/link/ping', { uuid: uuid() }).then((data) => {
         if (data.data) {

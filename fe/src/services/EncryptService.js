@@ -5,7 +5,7 @@ import { isLocal } from './ApiService'
 export const encryptAES = (key, str) => {
   key = keyPad(key)
 
-  let iv = enc.Utf8.parse(import.meta.env.VITE_MCRM__IV)
+  let iv = enc.Utf8.parse(window.__CONFIG__.MCRM__IV)
   let encrypted = AES.encrypt(str, key, {
     iv: iv,
     padding: pad.Pkcs7,
@@ -16,7 +16,7 @@ export const encryptAES = (key, str) => {
 export const decryptAES = (key, str) => {
   key = keyPad(key)
 
-  let iv = enc.Utf8.parse(import.meta.env.VITE_MCRM__IV)
+  let iv = enc.Utf8.parse(window.__CONFIG__.MCRM__IV)
   let encrypted = AES.decrypt(str.toString(), key, {
     iv: iv,
     padding: pad.Pkcs7,
@@ -39,7 +39,7 @@ function keyPad(key) {
   let returnKey = key
 
   if (key.length == 4) {
-    returnKey = key + import.meta.env.VITE_MCRM__SALT
+    returnKey = key + window.__CONFIG__.MCRM__SALT
   }
 
   return enc.Utf8.parse(returnKey)

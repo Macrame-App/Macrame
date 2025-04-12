@@ -20,7 +20,7 @@ export const usePanelStore = defineStore('panel', () => {
 
   const get = async (dir) => {
     const data = AuthCall({ dir: dir })
-    // alert(JSON.stringify(data))
+
     const resp = await axios.post(appUrl() + '/panel/get', data)
 
     if (!resp.data && !current.value.html) return false

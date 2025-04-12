@@ -149,7 +149,7 @@ onMounted(async () => {
   const serverIP = await device.serverGetIP()
   server.ip = serverIP
 
-  server.port = import.meta.env.VITE_MCRM__PORT
+  server.port = window.__CONFIG__.MCRM__PORT
 })
 
 async function startLink(deviceUuid) {
@@ -184,7 +184,9 @@ function resetPinLink() {
 
 function unlinkDevice(id) {
   axios.post(appUrl() + '/device/link/remove', { uuid: id }).then((data) => {
-    if (data.data) device.serverGetRemotes()
+    if (data.data) {
+      device.serverGetRemotes()
+    }
   })
 }
 </script>

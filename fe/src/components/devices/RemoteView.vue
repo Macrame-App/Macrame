@@ -105,7 +105,7 @@ const linkPinInput = ref()
 
 const server = reactive({
   host: '',
-  port: import.meta.env.VITE_MCRM__PORT,
+  port: window.__CONFIG__.MCRM__PORT,
   status: false,
   link: false,
   inputPin: '',
@@ -172,6 +172,7 @@ function pingLink() {
 
 async function decryptKey() {
   const decryptedKey = decryptAES(server.inputPin, server.encryptedKey)
+
   const handshake = await device.remoteHandshake(decryptedKey)
 
   if (handshake) {
