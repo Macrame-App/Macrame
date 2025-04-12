@@ -1,4 +1,5 @@
 .env
+config.js
 
 be/devices/*
 be/tmp/
