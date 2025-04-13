@@ -51,6 +51,7 @@ onMounted(() => {
 
 const toggleSave = () => {
   if (!macroRecorder.save()) errorDialog.value.toggleDialog(true)
+  else window.location.reload()
 }
 </script>
 

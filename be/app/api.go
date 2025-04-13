@@ -26,7 +26,9 @@ func ApiCORS(w http.ResponseWriter, r *http.Request) (http.ResponseWriter, *http
 func ApiGet(w http.ResponseWriter, r *http.Request) {
 	file := "" // base directory
 
-	if r.URL.Path != "/" {
+	if strings.Contains(r.URL.Path, "/config.js") {
+		file = "../public/config.js"
+	} else if r.URL.Path != "/" {
 		file = "../public" + r.URL.Path // request
 	}
 
@@ -40,7 +42,7 @@ func ApiGet(w http.ResponseWriter, r *http.Request) {
 		file = "../public/index.html" // default
 	}
 
-	http.ServeFile(w, r, file) // serve file
+	http.ServeFile(w, r, file)
 }
 
 func ApiPost(w http.ResponseWriter, r *http.Request) {

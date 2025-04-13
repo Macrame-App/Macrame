@@ -30,6 +30,8 @@ func main() {
 func apiInit(w http.ResponseWriter, r *http.Request) {
 	app.ApiCORS(w, r)
 
+	app.MCRMLog("Remote IP: " + r.RemoteAddr)
+
 	if r.Method == "GET" {
 		app.ApiGet(w, r)
 	} else if r.Method == "POST" {

@@ -107,6 +107,8 @@ nav {
         items-center
         gap-2
         px-4 py-2
+        text-white
+        no-underline
         border-transparent
         transition-colors;
 

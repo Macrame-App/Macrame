@@ -41,3 +41,7 @@ ul {
 strong {
   @apply font-bold;
 }
+
+a {
+  @apply underline text-amber-400 hover:text-amber-300;
+}
