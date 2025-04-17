@@ -5,7 +5,7 @@
     <div class="panel__content">
       <div class="grid gap-1 opacity-50 h-fit">
         <em v-if="isLocal()">This is the server dashboard.</em>
-        <em v-else>This is the server dashboard.</em>
+        <em v-else>This is the remote dashboard.</em>
       </div>
       <div v-if="isLocal()">
         <h4>Start: Authenticate a device</h4>

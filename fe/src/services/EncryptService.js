@@ -24,8 +24,10 @@ export const decryptAES = (key, str) => {
   return encrypted.toString(enc.Utf8)
 }
 
-export const AuthCall = (data) => {
+export const AuthCall = (data = false) => {
   if (isLocal()) return data
+
+  if (!data) data = {empty: true}
 
   const device = useDeviceStore()
 

@@ -7,7 +7,7 @@ export const appUrl = () => {
   return `http://${window.location.hostname}:${port}`
 }
 
-export const isLocal = () => {
+export const isLocal = () => {  
   return window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
 }
 

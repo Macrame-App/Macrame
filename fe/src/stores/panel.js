@@ -39,7 +39,9 @@ export const usePanelStore = defineStore('panel', () => {
   const getList = async () => {
     if (list.value.length > 0) return list.value
 
-    const resp = await axios.post(appUrl() + '/panel/list')
+    const data = AuthCall()
+
+    const resp = await axios.post(appUrl() + '/panel/list', data)
     list.value = resp.data
 
     return list.value
