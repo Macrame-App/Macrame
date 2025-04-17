@@ -44,8 +44,11 @@ func GetServerIP(w http.ResponseWriter, r *http.Request) {
 
 func DeviceList(w http.ResponseWriter, r *http.Request) {
 	dir := "devices"
+
 	files, err := os.ReadDir(dir)
 	if err != nil {
+		os.MkdirAll(dir, 0600)
+		files = nil
 		MCRMLog("DeviceList Error: ", err)
 	}
 
@@ -112,8 +115,6 @@ func DeviceAccessCheck(w http.ResponseWriter, r *http.Request) {
 		MCRMLog("DeviceAccessCheck: UUID: ", req.Uuid, "; Access: Unlinked")
 		json.NewEncoder(w).Encode("unlinked")
 	}
-
-	return
 }
 
 func DeviceAccessRequest(w http.ResponseWriter, r *http.Request) {
@@ -157,9 +158,6 @@ func PingLink(w http.ResponseWriter, r *http.Request) {
 	key, keyErr := os.ReadFile("devices/" + req.Uuid + ".key")
 	pin, pinErr := os.ReadFile("devices/" + req.Uuid + ".tmp")
 
-	// MCRMLog("PingLink UUID: ", req.Uuid)
-	// MCRMLog("PingLink Key: ", string(key), "; Pin: ", string(pin))
-
 	encryptedKey, encErr := helper.EncryptAES(string(pin), string(key))
 
 	if keyErr == nil && pinErr == nil && encErr == nil {
@@ -192,13 +190,11 @@ func StartLink(w http.ResponseWriter, r *http.Request) {
 	errKey := helper.SaveDeviceKey(req.Uuid, deviceKey)
 	savedPin, errPin := helper.TempPinFile(req.Uuid, pin)
 
-	if errKey == nil && errPin == nil && savedPin == true {
+	if errKey == nil && errPin == nil && savedPin {
 		json.NewEncoder(w).Encode(pin)
 	} else {
-		MCRMLog("StartLink Error: errKey:", err, "; errPin:", err)
+		MCRMLog("StartLink Error: errKey:", errKey, "; errPin:", errPin)
 	}
-
-	return
 }
 
 func PollLink(w http.ResponseWriter, r *http.Request) {

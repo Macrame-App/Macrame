@@ -24,23 +24,46 @@ func ApiCORS(w http.ResponseWriter, r *http.Request) (http.ResponseWriter, *http
 }
 
 func ApiGet(w http.ResponseWriter, r *http.Request) {
-	file := "" // base directory
+	// file := "" // base directory
+
+	// if strings.Contains(r.URL.Path, "/config.js") {
+	// 	file = "../public/config.js"
+	// } else if r.URL.Path != "/" {
+	// 	file = "../public" + r.URL.Path // request
+	// }
+	// MCRMLog("ApiGet Path: ", r.URL.Path, "; File: ", file)
+
+	// contentType := mime.TypeByExtension(filepath.Ext(file)) // get content type
+
+	// if contentType == "" {
+	// 	file = "../public/index.html" // default
+	// }
+
+	// MCRMLog("ApiGet File: ", file)
+
+	// http.ServeFile(w, r, file)
+	root, err := filepath.Abs("../public")
+	if err != nil {
+		MCRMLog("ApiGet Abs Error: ", err)
+		return
+	}
+
+	var file string
 
 	if strings.Contains(r.URL.Path, "/config.js") {
-		file = "../public/config.js"
+		file = filepath.Join(root, "config.js")
+		w.Header().Set("Content-Type", "text/javascript") // set content type header
 	} else if r.URL.Path != "/" {
-		file = "../public" + r.URL.Path // request
+		file = filepath.Join(root, r.URL.Path)
 	}
 
 	contentType := mime.TypeByExtension(filepath.Ext(file)) // get content type
 
-	if contentType != "" {
-		w.Header().Set("Content-Type", contentType) // set content type header
+	if contentType == "" {
+		file = filepath.Join(root, "index.html")
 	}
 
-	if contentType == "" {
-		file = "../public/index.html" // default
-	}
+	// MCRMLog("ApiGet Path: ", r.URL.Path, "; File: ", file, "; Content-Type: ", contentType)
 
 	http.ServeFile(w, r, file)
 }
@@ -100,6 +123,9 @@ func ApiAuth(data string, w http.ResponseWriter, r *http.Request) {
 		PlayMacro(data, w, r)
 	case "/device/link/remove":
 		RemoveLink(data, w, r)
+	case "/panel/list":
+		MCRMLog("Authenticated Panellist")
+		PanelList(w, r)
 	case "/panel/get":
 		GetPanel(data, w, r)
 	}

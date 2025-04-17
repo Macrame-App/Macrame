@@ -13,8 +13,8 @@ var configPath = "../public/config.js"
 
 func EnvGet(key string) string {
 	if !configFileExists() {
-		createConfigFile(configPath)
-		checkFeDevDir()
+		CreateConfigFile(configPath)
+		CheckFeDevDir()
 	}
 
 	data, err := os.ReadFile(configPath)
@@ -41,7 +41,8 @@ func configFileExists() bool {
 	return err == nil
 }
 
-func checkFeDevDir() {
+func CheckFeDevDir() {
+	log.Println("Checking FE dev directory...")
 	_, err := os.Stat("../fe")
 
 	if err != nil {
@@ -64,7 +65,7 @@ func copyConfigToFe() {
 	}
 }
 
-func createConfigFile(filename string) {
+func CreateConfigFile(filename string) {
 	port, _ := findOpenPort()
 	saltKey := GenerateKey()
 	salt := saltKey[:28]

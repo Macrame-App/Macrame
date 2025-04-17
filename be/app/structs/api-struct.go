@@ -26,19 +26,18 @@ var Endpoints = Allowed{
 		"/panel/save/json",
 	},
 	Remote: []string{
-		"/macro/list",
 		"/device/access/check",
 		"/device/access/request",
+		"/device/server/ip",
 		"/device/link/ping",
 		"/device/link/end",
 		"/device/handshake",
 		"/device/auth",
-		"/panel/list",
-		// "/panel/get",
 	},
 	Auth: []string{
 		"/macro/play",
 		"/device/link/remove",
 		"/panel/get",
+		"/panel/list",
 	},
 }

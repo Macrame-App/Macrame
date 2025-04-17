@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"strings"
 
 	"be/app"
 	"be/app/helper"
@@ -10,6 +12,8 @@ import (
 
 func main() {
 	app.MCRMLogInit()
+
+	switchToBeDir()
 
 	if helper.EnvGet("MCRM__PORT") == "" {
 		app.MCRMLog("Error: MCRM__PORT is not set")
@@ -19,18 +23,28 @@ func main() {
 		apiInit(w, r)
 	})
 
-	log.Println("Listening on http://localhost:" + helper.EnvGet("MCRM__PORT"))
+	// helper.OpenBrowser("http://localhost:" + helper.EnvGet("MCRM__PORT"))
 
-	helper.OpenBrowser("http://localhost:" + helper.EnvGet("MCRM__PORT"))
+	app.MCRMLog("Listening on http://localhost:" + helper.EnvGet("MCRM__PORT"))
 
 	app.MCRMLog(http.ListenAndServe(":"+helper.EnvGet("MCRM__PORT"), nil))
+}
 
+func switchToBeDir() {
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if !strings.HasSuffix(cwd, "be") {
+		err := os.Chdir("be")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 func apiInit(w http.ResponseWriter, r *http.Request) {
 	app.ApiCORS(w, r)
-
-	app.MCRMLog("Remote IP: " + r.RemoteAddr)
 
 	if r.Method == "GET" {
 		app.ApiGet(w, r)

@@ -2,10 +2,7 @@ module be
 
 go 1.24.0
 
-require (
-	github.com/go-vgo/robotgo v0.110.6
-	github.com/joho/godotenv v1.5.1
-)
+require github.com/go-vgo/robotgo v0.110.7
 
 require (
 	github.com/dblohm7/wingoes v0.0.0-20240820181039-f2b84150679e // indirect

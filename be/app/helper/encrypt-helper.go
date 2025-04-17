@@ -7,9 +7,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
-	"math"
 	mathRand "math/rand"
-	"strconv"
 	"strings"
 )
 
@@ -75,10 +73,11 @@ func GenerateRandomString(length int) string {
 }
 
 func GenerateRandomIntegerString(length int) string {
-	min := int64(0)
-	max := int64(math.Pow10(length))
-	randInt := min + mathRand.Int63()%(max-min+1)
-	return strconv.FormatInt(randInt, 10)
+	var sb strings.Builder
+	for i := 0; i < length; i++ {
+		sb.WriteByte('0' + byte(mathRand.Intn(10)))
+	}
+	return sb.String()
 }
 
 func GenerateKey() string {
