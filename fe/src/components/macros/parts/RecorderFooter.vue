@@ -49,8 +49,10 @@ onMounted(() => {
   })
 })
 
-const toggleSave = () => {
-  if (!macroRecorder.save()) errorDialog.value.toggleDialog(true)
+const toggleSave = async () => {
+  const saveResp = await macroRecorder.save()
+
+  if (!saveResp) errorDialog.value.toggleDialog(true)
   else window.location.reload()
 }
 </script>

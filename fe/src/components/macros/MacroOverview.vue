@@ -4,7 +4,12 @@
     <div class="macro-overview__list">
       <LoadComp :loading="macros.loading" text="Loading macros..." />
       <div class="macro-item" v-for="(macro, i) in macros.list" :key="i">
-        <ButtonComp variant="dark" class="w-full" size="sm">
+        <ButtonComp
+          variant="dark"
+          class="w-full"
+          size="sm"
+          @click="macroRecorder.open(macro.macroname, macro.name)"
+        >
           <IconKeyboard /> {{ macro.name }}
         </ButtonComp>
       </div>
@@ -20,16 +25,16 @@
 import { IconKeyboard } from '@tabler/icons-vue'
 import ButtonComp from '../base/ButtonComp.vue'
 import { onMounted, reactive } from 'vue'
-import axios from 'axios'
-import { appUrl, isLocal } from '@/services/ApiService'
-import { AuthCall } from '@/services/EncryptService'
-import { GetMacroList, RunMacro } from '@/services/MacroService'
+import { GetMacroList } from '@/services/MacroService'
 import LoadComp from '../base/LoadComp.vue'
+import { useMacroRecorderStore } from '@/stores/macrorecorder'
 
 const macros = reactive({
   loading: true,
   list: [],
 })
+
+const macroRecorder = useMacroRecorderStore()
 
 onMounted(() => {
   loadMacroList()

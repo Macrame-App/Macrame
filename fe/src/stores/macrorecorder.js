@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import { filterKey, isRepeat, invalidMacro } from '../services/MacroRecordService'
+import { filterKey, isRepeat, invalidMacro, translateJSON } from '../services/MacroRecordService'
 import axios from 'axios'
 import { appUrl } from '@/services/ApiService'
 
@@ -48,6 +48,8 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
 
   // Setters - Actions
   const recordStep = (e, direction = false, key = false) => {
+    if ((e.ctrlKey, e.shiftKey, e.altKey, e.metaKey)) e.preventDefault()
+
     const lastStep = steps.value[steps.value.length - 1]
 
     let stepVal = {}
@@ -72,6 +74,8 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
 
     if (key !== false) steps.value[key] = stepVal
     else steps.value.push(stepVal)
+
+    console.log(steps.value)
   }
 
   const recordDelay = () => {
@@ -171,18 +175,36 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     if (state.value.edit) resetEdit()
   }
 
-  const save = () => {
+  const save = async () => {
     state.value.validationErrors = invalidMacro(steps.value)
 
     if (state.value.validationErrors) return false
 
-    axios.post(appUrl() + '/macro/record', { name: macroName.value, steps: steps.value })
+    const resp = await axios.post(appUrl() + '/macro/record', {
+      name: macroName.value,
+      steps: steps.value,
+    })
 
-    return true
+    return resp.status == 200
+  }
+
+  const open = async (macroFileName, name) => {
+    console.log(name)
+
+    const openResp = await axios.post(appUrl() + '/macro/open', {
+      macro: macroFileName,
+    })
+
+    if (openResp.data) steps.value = translateJSON(openResp.data)
+
+    // console.log(macroName)
+
+    macroName.value = name
   }
 
   return {
     state,
+    macroName,
     steps,
     delay,
     getEditKey,
@@ -198,5 +220,6 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     resetEdit,
     reset,
     save,
+    open,
   }
 })

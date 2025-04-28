@@ -125,3 +125,47 @@ export const invalidMacro = (steps) => {
 
   return { down: downKeys, up: upKeys }
 }
+
+export const translateJSON = (json) => {
+  const steps = []
+
+  json.forEach((step) => {
+    if (step.type === 'delay') steps.push(step)
+    if (step.type === 'key') steps.push(codeToStep(step.code, step.direction))
+  })
+
+  return steps
+}
+
+export const codeToStep = (code, direction) => {
+  let key = ''
+  let location = 0
+  let codeStr = code
+
+  if (code.includes('Left')) {
+    key = code.replace('Left', '')
+    location = 1
+  }
+  if (code.includes('Right')) {
+    key = code.replace('Right', '')
+    location = 2
+  }
+  if (code.includes('Numpad')) {
+    key = code.replace('Numpad', '')
+    location = 3
+  }
+
+  if (code.includes('Media')) codeStr = ''
+
+  if (key === '') key = code
+
+  const stepObj = {
+    type: 'key',
+    code: codeStr,
+    key: key,
+    location: location,
+    direction: direction,
+  }
+
+  return { ...stepObj, keyObj: filterKey(stepObj) }
+}
