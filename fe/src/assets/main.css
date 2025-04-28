@@ -9,7 +9,9 @@
 
 @variant dark (&:where(.dark, .dark *));
 
-@theme {
+html,
+body,
+:not(#panel-html__body) {
   --font-sans: 'Roboto', sans-serif;
   --font-mono: 'Fira Code', monospace;
 }
