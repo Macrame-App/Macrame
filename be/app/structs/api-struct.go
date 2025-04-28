@@ -10,6 +10,7 @@ var Endpoints = Allowed{
 	Local: []string{
 		"/macro/record",
 		"/macro/list",
+		"/macro/open",
 		"/macro/delete",
 		"/macro/play",
 		"/device/server/ip",

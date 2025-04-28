@@ -18,12 +18,25 @@ func GetServerIP(w http.ResponseWriter, r *http.Request) {
 	ifs, err := net.Interfaces()
 	if err != nil {
 		MCRMLog(err)
+		return
 	}
+
 	for _, ifi := range ifs {
+		// Skip interfaces that are down
+		if ifi.Flags&net.FlagUp == 0 {
+			continue
+		}
+		// Skip loopback interfaces
+		if ifi.Flags&net.FlagLoopback != 0 {
+			continue
+		}
+
 		addrs, err := ifi.Addrs()
 		if err != nil {
 			MCRMLog(err)
+			continue
 		}
+
 		for _, addr := range addrs {
 			var ip net.IP
 
@@ -34,10 +47,18 @@ func GetServerIP(w http.ResponseWriter, r *http.Request) {
 				ip = v.IP
 			}
 
-			if ip != nil && ip.To4() != nil {
-				json.NewEncoder(w).Encode(ip.String())
-				return
+			if ip == nil || ip.To4() == nil {
+				continue
 			}
+
+			// Skip APIPA (169.254.x.x) addresses
+			if ip.IsLinkLocalUnicast() {
+				continue
+			}
+
+			// Found a good IP, return it
+			json.NewEncoder(w).Encode(ip.String())
+			return
 		}
 	}
 }

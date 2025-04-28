@@ -24,24 +24,6 @@ func ApiCORS(w http.ResponseWriter, r *http.Request) (http.ResponseWriter, *http
 }
 
 func ApiGet(w http.ResponseWriter, r *http.Request) {
-	// file := "" // base directory
-
-	// if strings.Contains(r.URL.Path, "/config.js") {
-	// 	file = "../public/config.js"
-	// } else if r.URL.Path != "/" {
-	// 	file = "../public" + r.URL.Path // request
-	// }
-	// MCRMLog("ApiGet Path: ", r.URL.Path, "; File: ", file)
-
-	// contentType := mime.TypeByExtension(filepath.Ext(file)) // get content type
-
-	// if contentType == "" {
-	// 	file = "../public/index.html" // default
-	// }
-
-	// MCRMLog("ApiGet File: ", file)
-
-	// http.ServeFile(w, r, file)
 	root, err := filepath.Abs("../public")
 	if err != nil {
 		MCRMLog("ApiGet Abs Error: ", err)
@@ -62,8 +44,6 @@ func ApiGet(w http.ResponseWriter, r *http.Request) {
 	if contentType == "" {
 		file = filepath.Join(root, "index.html")
 	}
-
-	// MCRMLog("ApiGet Path: ", r.URL.Path, "; File: ", file, "; Content-Type: ", contentType)
 
 	http.ServeFile(w, r, file)
 }
@@ -86,6 +66,8 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 		SaveMacro(w, r)
 	case "/macro/list":
 		ListMacros(w, r)
+	case "/macro/open":
+		OpenMacro(w, r)
 	case "/macro/delete":
 		DeleteMacro(w, r)
 	case "/macro/play":

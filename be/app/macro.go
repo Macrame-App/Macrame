@@ -128,3 +128,27 @@ func PlayMacro(data string, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func OpenMacro(w http.ResponseWriter, r *http.Request) {
+	var req structs.MacroRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		MCRMLog("OpenMacro Decode Error: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var filename = helper.FormatMacroFileName(req.Macro)
+
+	macroFile, err := helper.ReadMacroFile(fmt.Sprintf("../macros/%s.json", filename))
+
+	if err != nil {
+		MCRMLog("OpenMacro ReadMacroFile Error: ", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(macroFile)
+}

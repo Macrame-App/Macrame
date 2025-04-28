@@ -1,6 +1,8 @@
 package helper
 
-import "strings"
+import (
+	"strings"
+)
 
 func Translate(code string) string {
 	translations := map[string]string{
@@ -44,6 +46,18 @@ func Translate(code string) string {
 		"NumpadDivide":       "num/",
 		"NumpadEnter":        "num_enter",
 		"Clear":              "num_clear",
+		"BracketLeft":        "[",
+		"BracketRight":       "]",
+		"Quote":              "'",
+		"Semicolon":          ";",
+		"Backquote":          "`",
+		"Backslash":          "\\",
+		"IntlBackslash":      "\\",
+		"Slash":              "/",
+		"Comma":              ",",
+		"Period":             ".",
+		"Equal":              "=",
+		"Minus":              "-",
 	}
 
 	if translations[code] == "" {
