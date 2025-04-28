@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -119,7 +120,29 @@ func ListMacros(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(macroList)
 }
 
-func DeleteMacro(w http.ResponseWriter, r *http.Request) {}
+func DeleteMacro(w http.ResponseWriter, r *http.Request) {
+	var req structs.MacroRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		MCRMLog("DeleteMacro Decode Error: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var filename = helper.FormatMacroFileName(req.Macro)
+
+	err = os.Remove("../macros/" + filename + ".json")
+
+	if err != nil {
+		MCRMLog("DeleteMacro Remove Error: ", err)
+		json.NewEncoder(w).Encode(false)
+		return
+	}
+	log.Println("Deleted Macro:", req.Macro)
+	json.NewEncoder(w).Encode(true)
+}
 
 func PlayMacro(data string, w http.ResponseWriter, r *http.Request) {
 	req := &structs.MacroRequest{}
