@@ -22,8 +22,8 @@ mkdir $BUILD_DIR/panels
 mkdir $BUILD_DIR/public
 
 # Move the generated files to the new build directory
-mv ../be/Macrame.exe $BUILD_DIR/be/Macrame.exe
-mv ../be/Setup.exe $BUILD_DIR/be/Setup.exe
+cp ../be/Macrame.exe $BUILD_DIR/be/Macrame.exe
+cp ../be/Setup.exe $BUILD_DIR/be/Setup.exe
 cp -r ../macros/* $BUILD_DIR/macros/
 cp -r ../panels/* $BUILD_DIR/panels/
 mv ../public/* $BUILD_DIR/public/

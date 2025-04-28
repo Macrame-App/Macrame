@@ -1,34 +1,24 @@
 @echo off
-setlocal
 
-REM Set paths relative to the current working directory
+set ruleName="Macrame LAN Access"
+set exePath=%~dp0be\Macrame.exe
 
-$ruleName = "Macrame LAN Access"
-$exePath = Join-Path $PSScriptRoot "be\Macrame.exe"
+:: Check if rule exists
+netsh advfirewall firewall show rule name=%ruleName% >nul 2>&1
+if %errorlevel%==1 (
+    netsh advfirewall firewall add rule name=%ruleName% dir=in action=allow program=%exePath% protocol=tcp profile=private enabled=true
+    echo Firewall rule '%ruleName%' added for %exePath%
+) else (
+    echo Firewall rule '%ruleName%' already exists
+)
 
-# Check if rule exists
-$existingRule = Get-NetFirewallRule -DisplayName $ruleName -ErrorAction SilentlyContinue
-
-if (-not $existingRule) {
-    New-NetFirewallRule -DisplayName $ruleName `
-                        -Direction Inbound `
-                        -Action Allow `
-                        -Program $exePath `
-                        -Protocol TCP `
-                        -Profile Private `
-                        -Enabled True
-
-    Write-Host "Firewall rule '$ruleName' added for $exePath"
-} else {
-    Write-Host "Firewall rule '$ruleName' already exists"
-}
 :: Navigate to the "be" directory
 cd /d "%~dp0be"
 
+echo Moved to Backend directory
+
 :: Run setup.exe to generate configuration and necessary files
 start /wait Setup.exe
-
-:: start /wait caddy.exe fmt --overwrite
 
 :: Run Caddy to generate certificates and serve content
 :: start /wait caddy.exe start --config CaddyFile
