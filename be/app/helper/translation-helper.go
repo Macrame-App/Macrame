@@ -67,6 +67,10 @@ func Translate(code string) string {
 }
 
 func ReverseTranslate(name string) string {
+	if name == "\\" {
+		return "Backslash"
+	}
+
 	for key, value := range translations {
 		if value == name {
 			return key

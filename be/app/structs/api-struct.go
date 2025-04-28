@@ -8,6 +8,7 @@ type Allowed struct {
 
 var Endpoints = Allowed{
 	Local: []string{
+		"/macro/check",
 		"/macro/record",
 		"/macro/list",
 		"/macro/open",
