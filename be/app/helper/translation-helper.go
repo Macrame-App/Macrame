@@ -4,68 +4,139 @@ import (
 	"strings"
 )
 
-func Translate(code string) string {
-	translations := map[string]string{
-		"ArrowUp":            "up",
-		"ArrowDown":          "down",
-		"ArrowRight":         "right",
-		"ArrowLeft":          "left",
-		"Meta":               "cmd",
-		"MetaLeft":           "lcmd",
-		"MetaRight":          "rcmd",
-		"Alt":                "alt",
-		"AltLeft":            "lalt",
-		"AltRight":           "ralt",
-		"Control":            "ctrl",
-		"ControlLeft":        "lctrl",
-		"ControlRight":       "rctrl",
-		"Shift":              "shift",
-		"ShiftLeft":          "lshift",
-		"ShiftRight":         "rshift",
-		"AudioVolumeMute":    "audio_mute",
-		"AudioVolumeDown":    "audio_vol_down",
-		"AudioVolumeUp":      "audio_vol_up",
-		"MediaTrackPrevious": "audio_prev",
-		"MediaTrackNext":     "audio_next",
-		"MediaPlayPause":     "audio_play|audio_pause",
-		"Numpad0":            "num0",
-		"Numpad1":            "num1",
-		"Numpad2":            "num2",
-		"Numpad3":            "num3",
-		"Numpad4":            "num4",
-		"Numpad5":            "num5",
-		"Numpad6":            "num6",
-		"Numpad7":            "num7",
-		"Numpad8":            "num8",
-		"Numpad9":            "num9",
-		"NumLock":            "num_lock",
-		"NumpadDecimal":      "num.",
-		"NumpadAdd":          "num+",
-		"NumpadSubtract":     "num-",
-		"NumpadMultiply":     "num*",
-		"NumpadDivide":       "num/",
-		"NumpadEnter":        "num_enter",
-		"Clear":              "num_clear",
-		"BracketLeft":        "[",
-		"BracketRight":       "]",
-		"Quote":              "'",
-		"Semicolon":          ";",
-		"Backquote":          "`",
-		"Backslash":          "\\",
-		"IntlBackslash":      "\\",
-		"Slash":              "/",
-		"Comma":              ",",
-		"Period":             ".",
-		"Equal":              "=",
-		"Minus":              "-",
-	}
-
-	if translations[code] == "" {
-		return strings.ToLower(code)
-	}
-
-	return translations[code]
+var translations = map[string]string{
+	"ArrowUp":            "up",
+	"ArrowDown":          "down",
+	"ArrowRight":         "right",
+	"ArrowLeft":          "left",
+	"Meta":               "cmd",
+	"MetaLeft":           "lcmd",
+	"MetaRight":          "rcmd",
+	"Alt":                "alt",
+	"AltLeft":            "lalt",
+	"AltRight":           "ralt",
+	"Control":            "ctrl",
+	"ControlLeft":        "lctrl",
+	"ControlRight":       "rctrl",
+	"Shift":              "shift",
+	"ShiftLeft":          "lshift",
+	"ShiftRight":         "rshift",
+	"AudioVolumeMute":    "audio_mute",
+	"AudioVolumeDown":    "audio_vol_down",
+	"AudioVolumeUp":      "audio_vol_up",
+	"MediaTrackPrevious": "audio_prev",
+	"MediaTrackNext":     "audio_next",
+	"MediaPlayPause":     "audio_play|audio_pause",
+	"Numpad0":            "num0",
+	"Numpad1":            "num1",
+	"Numpad2":            "num2",
+	"Numpad3":            "num3",
+	"Numpad4":            "num4",
+	"Numpad5":            "num5",
+	"Numpad6":            "num6",
+	"Numpad7":            "num7",
+	"Numpad8":            "num8",
+	"Numpad9":            "num9",
+	"NumLock":            "num_lock",
+	"NumpadDecimal":      "num.",
+	"NumpadAdd":          "num+",
+	"NumpadSubtract":     "num-",
+	"NumpadMultiply":     "num*",
+	"NumpadDivide":       "num/",
+	"NumpadEnter":        "num_enter",
+	"Clear":              "num_clear",
+	"BracketLeft":        "[",
+	"BracketRight":       "]",
+	"Quote":              "'",
+	"Semicolon":          ";",
+	"Backquote":          "`",
+	"Backslash":          "\\",
+	"IntlBackslash":      "\\",
+	"Slash":              "/",
+	"Comma":              ",",
+	"Period":             ".",
+	"Equal":              "=",
+	"Minus":              "-",
 }
+
+func Translate(code string) string {
+	if val, ok := translations[code]; ok {
+		return val
+	}
+	return strings.ToLower(code)
+}
+
+func ReverseTranslate(name string) string {
+	for key, value := range translations {
+		if value == name {
+			return key
+		}
+	}
+	return name
+}
+
+// func Translate(code string) string {
+// 	translations := map[string]string{
+// 		"ArrowUp":            "up",
+// 		"ArrowDown":          "down",
+// 		"ArrowRight":         "right",
+// 		"ArrowLeft":          "left",
+// 		"Meta":               "cmd",
+// 		"MetaLeft":           "lcmd",
+// 		"MetaRight":          "rcmd",
+// 		"Alt":                "alt",
+// 		"AltLeft":            "lalt",
+// 		"AltRight":           "ralt",
+// 		"Control":            "ctrl",
+// 		"ControlLeft":        "lctrl",
+// 		"ControlRight":       "rctrl",
+// 		"Shift":              "shift",
+// 		"ShiftLeft":          "lshift",
+// 		"ShiftRight":         "rshift",
+// 		"AudioVolumeMute":    "audio_mute",
+// 		"AudioVolumeDown":    "audio_vol_down",
+// 		"AudioVolumeUp":      "audio_vol_up",
+// 		"MediaTrackPrevious": "audio_prev",
+// 		"MediaTrackNext":     "audio_next",
+// 		"MediaPlayPause":     "audio_play|audio_pause",
+// 		"Numpad0":            "num0",
+// 		"Numpad1":            "num1",
+// 		"Numpad2":            "num2",
+// 		"Numpad3":            "num3",
+// 		"Numpad4":            "num4",
+// 		"Numpad5":            "num5",
+// 		"Numpad6":            "num6",
+// 		"Numpad7":            "num7",
+// 		"Numpad8":            "num8",
+// 		"Numpad9":            "num9",
+// 		"NumLock":            "num_lock",
+// 		"NumpadDecimal":      "num.",
+// 		"NumpadAdd":          "num+",
+// 		"NumpadSubtract":     "num-",
+// 		"NumpadMultiply":     "num*",
+// 		"NumpadDivide":       "num/",
+// 		"NumpadEnter":        "num_enter",
+// 		"Clear":              "num_clear",
+// 		"BracketLeft":        "[",
+// 		"BracketRight":       "]",
+// 		"Quote":              "'",
+// 		"Semicolon":          ";",
+// 		"Backquote":          "`",
+// 		"Backslash":          "\\",
+// 		"IntlBackslash":      "\\",
+// 		"Slash":              "/",
+// 		"Comma":              ",",
+// 		"Period":             ".",
+// 		"Equal":              "=",
+// 		"Minus":              "-",
+// 	}
+
+// 	if translations[code] == "" {
+// 		return strings.ToLower(code)
+// 	}
+
+// 	return translations[code]
+// }
 
 // Redundant translation because tolower can be used
 // "Backspace":          "backspace",

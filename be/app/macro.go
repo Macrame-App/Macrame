@@ -150,5 +150,14 @@ func OpenMacro(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Walk through the macro file and reverse translate codes
+	for i, action := range macroFile {
+		if actionType, ok := action["type"].(string); ok && actionType == "key" {
+			if code, ok := action["code"].(string); ok {
+				macroFile[i]["code"] = helper.ReverseTranslate(code)
+			}
+		}
+	}
+
 	json.NewEncoder(w).Encode(macroFile)
 }
