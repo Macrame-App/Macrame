@@ -1,7 +1,7 @@
 <template>
   <div id="macros" class="panel">
     <h1 class="panel__title">Macros</h1>
-    <div class="panel__content !p-0">
+    <div class="panel__content !p-0 !overflow-hidden">
       <div class="macro-panel__content">
         <MacroOverview />
         <MacroRecorder />

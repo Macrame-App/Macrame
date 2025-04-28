@@ -61,9 +61,12 @@ const loadMacroList = async () => {
   }
 
   .macro-overview__list {
-    @apply grid 
+    @apply flex
+    flex-col 
+    pr-1
     gap-1
-    content-start;
+    h-[calc(100vh-11.7rem)]
+    overflow-auto;
   }
 
   .macro-item {
