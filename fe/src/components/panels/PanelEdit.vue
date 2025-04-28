@@ -76,6 +76,7 @@
 import { CheckMacroListChange, GetMacroList } from '@/services/MacroService'
 import {
   PanelButtonListeners,
+  PanelDialogListeners,
   RemovePanelStyle,
   SetPanelStyle,
   StripPanelHTML,
@@ -151,6 +152,7 @@ function EditButtonListeners() {
   }
 
   PanelButtonListeners(panelPreview.value, callback)
+  PanelDialogListeners(panelPreview.value)
 }
 
 function setEditButton(id) {

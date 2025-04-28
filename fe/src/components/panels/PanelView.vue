@@ -8,6 +8,8 @@
 import { RunMacro } from '@/services/MacroService'
 import {
   PanelButtonListeners,
+  PanelDialogListeners,
+  RemovePanelScripts,
   RemovePanelStyle,
   SetPanelStyle,
   StripPanelHTML,
@@ -33,20 +35,26 @@ onMounted(async () => {
   SetPanelStyle(viewPanel.value.style)
 
   setTimeout(() => {
-    viewPanelButtonListeners()
+    viewPanelListeners()
+
+    if (typeof window.onPanelLoaded === 'function') {
+      window.onPanelLoaded()
+    }
   }, 50)
 })
 
 onUnmounted(() => {
   RemovePanelStyle()
+  RemovePanelScripts()
 })
 
-const viewPanelButtonListeners = () => {
+const viewPanelListeners = () => {
   const callback = (button) => {
     RunMacro(viewPanel.value.macros[button.id])
   }
 
   PanelButtonListeners(panelView.value, callback)
+  PanelDialogListeners(panelView.value)
 }
 </script>
 
