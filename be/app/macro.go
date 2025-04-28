@@ -13,6 +13,30 @@ import (
 	"be/app/structs"
 )
 
+func CheckMacro(w http.ResponseWriter, r *http.Request) {
+	var req structs.MacroRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		MCRMLog("OpenMacro Decode Error: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var filename = helper.FormatMacroFileName(req.Macro)
+
+	macroFile, err := helper.ReadMacroFile(fmt.Sprintf("../macros/%s.json", filename))
+
+	if macroFile != nil && err == nil {
+		json.NewEncoder(w).Encode(true)
+		return
+	} else {
+		MCRMLog("OpenMacro ReadMacroFile Error: ", err)
+		json.NewEncoder(w).Encode(false)
+		return
+	}
+}
+
 func SaveMacro(w http.ResponseWriter, r *http.Request) {
 	var newMacro structs.NewMacro
 
@@ -57,7 +81,7 @@ func simplifyMacro(step structs.Step) map[string]interface{} {
 	case "key":
 		keyCode := step.Code
 
-		if keyCode == "" {
+		if keyCode == "" || (strings.Contains(keyCode, "Digit")) {
 			keyCode = step.Key
 		} else if strings.Contains(keyCode, "Key") {
 			keyCode = strings.Replace(keyCode, "Key", "", 1)
@@ -140,9 +164,7 @@ func OpenMacro(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var filename = helper.FormatMacroFileName(req.Macro)
-
-	macroFile, err := helper.ReadMacroFile(fmt.Sprintf("../macros/%s.json", filename))
+	macroFile, err := helper.ReadMacroFile(fmt.Sprintf("../macros/%s.json", req.Macro))
 
 	if err != nil {
 		MCRMLog("OpenMacro ReadMacroFile Error: ", err)

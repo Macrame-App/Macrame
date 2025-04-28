@@ -62,6 +62,8 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.URL.Path {
+	case "/macro/check":
+		CheckMacro(w, r)
 	case "/macro/record":
 		SaveMacro(w, r)
 	case "/macro/list":
