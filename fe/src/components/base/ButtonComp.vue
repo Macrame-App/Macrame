@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   href: String,
@@ -83,10 +83,10 @@ button,
   }
 
   &:hover {
-    @apply !text-white;
+    @apply text-white;
 
     svg {
-      @apply !stroke-white;
+      @apply stroke-current;
     }
   }
 

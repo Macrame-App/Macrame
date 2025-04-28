@@ -74,8 +74,6 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
 
     if (key !== false) steps.value[key] = stepVal
     else steps.value.push(stepVal)
-
-    console.log(steps.value)
   }
 
   const recordDelay = () => {
@@ -167,15 +165,16 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     state.value.editDelay = false
   }
 
-  const reset = () => {
+  const resetMacro = () => {
     state.value.record = false
     delay.value.start = 0
+    macroName.value = ''
     steps.value = []
 
     if (state.value.edit) resetEdit()
   }
 
-  const check = async () => {
+  const checkMacro = async () => {
     const resp = await axios.post(appUrl() + '/macro/check', {
       macro: macroName.value,
     })
@@ -183,7 +182,7 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     return resp.data
   }
 
-  const save = async () => {
+  const saveMacro = async () => {
     state.value.validationErrors = invalidMacro(steps.value)
 
     if (state.value.validationErrors) return false
@@ -196,14 +195,21 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     return resp.status == 200
   }
 
-  const open = async (macroFileName, name) => {
+  const deleteMacro = async (macroFilename) => {
+    const resp = await axios.post(appUrl() + '/macro/delete', {
+      macro: macroFilename,
+    })
+
+    if (resp.status == 200) return resp.data
+    else return false
+  }
+
+  const openMacro = async (macroFileName, name) => {
     const openResp = await axios.post(appUrl() + '/macro/open', {
       macro: macroFileName,
     })
 
     if (openResp.data) steps.value = translateJSON(openResp.data)
-
-    // console.log(macroName)
 
     macroName.value = name
   }
@@ -224,9 +230,10 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     changeDelay,
     toggleEdit,
     resetEdit,
-    reset,
-    check,
-    save,
-    open,
+    resetMacro,
+    checkMacro,
+    saveMacro,
+    deleteMacro,
+    openMacro,
   }
 })

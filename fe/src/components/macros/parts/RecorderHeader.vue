@@ -76,8 +76,6 @@ onUpdated(() => {
 })
 
 function changeName(name) {
-  console.log(name)
-
   macroRecorder.changeName(name)
   nameSet.value = name.length > 0
 }

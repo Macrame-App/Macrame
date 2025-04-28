@@ -3,7 +3,6 @@
     <ButtonComp
       v-if="macroRecorder.steps.length > 0"
       variant="danger"
-      size="sm"
       @click="macroRecorder.reset()"
     >
       <IconRestore /> Reset
@@ -20,10 +19,10 @@
           <h4 class="pr-4">Are you sure you want to overwrite:</h4>
           <h3 class="mb-2 text-center text-sky-500">{{ macroRecorder.macroName }}</h3>
           <div class="flex justify-between">
-            <ButtonComp variant="subtle" @click="overwriteDialog.toggleDialog(false)"
+            <ButtonComp size="sm" variant="subtle" @click="overwriteDialog.toggleDialog(false)"
               >No</ButtonComp
             >
-            <ButtonComp variant="primary" @click="saveMacro()">Yes</ButtonComp>
+            <ButtonComp size="sm" variant="primary" @click="saveMacro()">Yes</ButtonComp>
           </div>
         </div>
       </template>
@@ -33,7 +32,6 @@
       v-if="macroRecorder.steps.length > 0"
       :disabled="macroRecorder.state.record || macroRecorder.state.edit"
       variant="success"
-      size="sm"
       @click="startCheck()"
     >
       <IconDeviceFloppy />
@@ -65,7 +63,7 @@ onMounted(() => {
 })
 
 const startCheck = async () => {
-  const checkResp = await macroRecorder.check()
+  const checkResp = await macroRecorder.checkMacro()
 
   if (checkResp) overwriteDialog.value.toggleDialog(true)
   else saveMacro()
@@ -74,7 +72,7 @@ const startCheck = async () => {
 const saveMacro = async () => {
   overwriteDialog.value.toggleDialog(false)
 
-  const saveResp = await macroRecorder.save()
+  const saveResp = await macroRecorder.saveMacro()
 
   if (!saveResp) errorDialog.value.toggleDialog(true)
   else window.location.reload()
