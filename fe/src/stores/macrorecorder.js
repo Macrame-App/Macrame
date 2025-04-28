@@ -175,6 +175,14 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     if (state.value.edit) resetEdit()
   }
 
+  const check = async () => {
+    const resp = await axios.post(appUrl() + '/macro/check', {
+      macro: macroName.value,
+    })
+
+    return resp.data
+  }
+
   const save = async () => {
     state.value.validationErrors = invalidMacro(steps.value)
 
@@ -189,8 +197,6 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
   }
 
   const open = async (macroFileName, name) => {
-    console.log(name)
-
     const openResp = await axios.post(appUrl() + '/macro/open', {
       macro: macroFileName,
     })
@@ -219,6 +225,7 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     toggleEdit,
     resetEdit,
     reset,
+    check,
     save,
     open,
   }

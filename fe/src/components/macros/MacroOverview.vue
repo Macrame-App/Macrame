@@ -6,11 +6,11 @@
       <div class="macro-item" v-for="(macro, i) in macros.list" :key="i">
         <ButtonComp
           variant="dark"
-          class="w-full"
+          class="overview__macro-button"
           size="sm"
           @click="macroRecorder.open(macro.macroname, macro.name)"
         >
-          <IconKeyboard /> {{ macro.name }}
+          <IconKeyboard /> <span>{{ macro.name }}</span>
         </ButtonComp>
       </div>
     </div>
@@ -19,7 +19,6 @@
 
 <script setup>
 // TODO
-// - load macro on click
 // - delete macro
 
 import { IconKeyboard } from '@tabler/icons-vue'
@@ -77,8 +76,12 @@ const loadMacroList = async () => {
   .macro-item {
     @apply flex items-center;
 
-    button {
-      @apply w-full;
+    button.overview__macro-button {
+      @apply w-full grid grid-cols-[1rem_1fr] justify-items-start;
+
+      span {
+        @apply truncate w-full text-left;
+      }
     }
   }
 }

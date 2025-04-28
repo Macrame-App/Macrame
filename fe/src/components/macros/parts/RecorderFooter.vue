@@ -14,13 +14,27 @@
         <ValidationErrorDialog />
       </template>
     </DialogComp>
+    <DialogComp ref="overwriteDialog">
+      <template #content>
+        <div class="grid gap-2">
+          <h4 class="pr-4">Are you sure you want to overwrite:</h4>
+          <h3 class="mb-2 text-center text-sky-500">{{ macroRecorder.macroName }}</h3>
+          <div class="flex justify-between">
+            <ButtonComp variant="subtle" @click="overwriteDialog.toggleDialog(false)"
+              >No</ButtonComp
+            >
+            <ButtonComp variant="primary" @click="saveMacro()">Yes</ButtonComp>
+          </div>
+        </div>
+      </template>
+    </DialogComp>
 
     <ButtonComp
       v-if="macroRecorder.steps.length > 0"
       :disabled="macroRecorder.state.record || macroRecorder.state.edit"
       variant="success"
       size="sm"
-      @click="toggleSave()"
+      @click="startCheck()"
     >
       <IconDeviceFloppy />
       Save
@@ -40,6 +54,7 @@ import { onMounted, ref } from 'vue'
 const macroRecorder = useMacroRecorderStore()
 
 const errorDialog = ref()
+const overwriteDialog = ref()
 
 onMounted(() => {
   macroRecorder.$subscribe((mutation) => {
@@ -49,7 +64,16 @@ onMounted(() => {
   })
 })
 
-const toggleSave = async () => {
+const startCheck = async () => {
+  const checkResp = await macroRecorder.check()
+
+  if (checkResp) overwriteDialog.value.toggleDialog(true)
+  else saveMacro()
+}
+
+const saveMacro = async () => {
+  overwriteDialog.value.toggleDialog(false)
+
   const saveResp = await macroRecorder.save()
 
   if (!saveResp) errorDialog.value.toggleDialog(true)

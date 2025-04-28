@@ -7,7 +7,7 @@
         id="macro-name"
         type="text"
         @input.prevent="changeName($event.target.value)"
-        v-model="macroName"
+        :value="macroName"
         placeholder="New macro"
       />
       <div :class="`recording__buttons ${!nameSet || macroRecorder.state.edit ? 'disabled' : ''}`">
@@ -63,7 +63,7 @@ import FixedDelayMenu from '../components/FixedDelayMenu.vue'
 
 import { useMacroRecorderStore } from '@/stores/macrorecorder'
 import EditDialogs from './EditDialogs.vue'
-import { computed, ref } from 'vue'
+import { computed, onUpdated, ref } from 'vue'
 
 const macroRecorder = useMacroRecorderStore()
 
@@ -71,7 +71,13 @@ const macroName = computed(() => macroRecorder.macroName)
 
 const nameSet = ref(false)
 
+onUpdated(() => {
+  nameSet.value = macroName.value && macroName.value.length > 0
+})
+
 function changeName(name) {
+  console.log(name)
+
   macroRecorder.changeName(name)
   nameSet.value = name.length > 0
 }
