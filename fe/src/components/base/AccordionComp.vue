@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUpdated, ref } from 'vue'
 import ButtonComp from './ButtonComp.vue'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-vue'
 
@@ -32,6 +32,10 @@ const props = defineProps({
 const accordionOpen = ref(false)
 
 onMounted(() => {
+  if (props.open) toggleAccordion(props.open)
+})
+
+onUpdated(() => {
   if (props.open) toggleAccordion(props.open)
 })
 

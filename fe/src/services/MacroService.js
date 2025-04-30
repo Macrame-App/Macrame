@@ -2,9 +2,13 @@ import axios from 'axios'
 import { appUrl, isLocal } from './ApiService'
 import { AuthCall } from './EncryptService'
 
-export const GetMacroList = async () => {
+export const GetMacroList = async (count = false) => {
   const request = await axios.post(appUrl() + '/macro/list')
-  return sortMacroList(request.data)
+  
+  if (!request.data) return 0
+
+  if (!count) return sortMacroList(request.data)
+  else return request.data.length
 }
 
 const sortMacroList = (list) => {

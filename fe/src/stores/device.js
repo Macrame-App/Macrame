@@ -52,16 +52,19 @@ export const useDeviceStore = defineStore('device', () => {
 
   const serverGetIP = async () => {
     const request = await axios.post(appUrl() + '/device/server/ip')
-    return request.data
+    return `http://${request.data}:${window.__CONFIG__.MCRM__PORT}`
   }
 
   // Server application
-  const serverGetRemotes = async (remoteUuid) => {
-    axios.post(appUrl() + '/device/list', { uuid: remoteUuid }).then((data) => {
-      if (data.data.devices) {
-        remote.value = data.data.devices
-      }
-    })
+  const serverGetRemotes = async (count = false) => {
+    const request = await axios.post(appUrl() + '/device/list')
+
+    if (!request.data.devices) return false
+
+    remote.value = request.data.devices
+
+    if (!count) return remote.value
+    else return Object.keys(remote.value).length
   }
 
   const serverStartLink = async (deviceUuid) => {

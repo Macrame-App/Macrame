@@ -36,15 +36,20 @@ export const usePanelStore = defineStore('panel', () => {
     return current.value
   }
 
-  const getList = async () => {
-    if (list.value.length > 0) return list.value
+  const getList = async (count = false) => {
+    if (list.value.length > 0 && !count) return list.value
+    else if (list.value.length > 0 && count) return list.value.length
 
     const data = AuthCall()
 
     const resp = await axios.post(appUrl() + '/panel/list', data)
     list.value = resp.data
 
-    return list.value
+    if (!resp.data && !count) return false
+    else if (!resp.data && count) return 0
+
+    if (!count) return list.value
+    else return list.value.length
   }
 
   return {

@@ -45,7 +45,8 @@ button,
   tracking-wide
   font-normal
   transition-all
-  cursor-pointer;
+  cursor-pointer
+  no-underline;
 
   transition:
     border-color 0.1s ease-in-out,

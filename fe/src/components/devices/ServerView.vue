@@ -7,12 +7,14 @@
 
     <div class="flex flex-wrap items-start gap-4 mcrm-block block__light">
       <h4 class="flex items-center justify-between w-full gap-4 mb-4">
-        <span class="flex gap-4" v-if="Object.keys(remote.devices).length > 0">
+        <span class="flex gap-4">
           <IconDevices />{{ Object.keys(remote.devices).length }}
-          {{ Object.keys(remote.devices).length > 1 ? 'Devices' : 'Device' }}
+          {{ Object.keys(remote.devices).length == 1 ? 'Device' : 'Devices' }}
         </span>
 
-        <ButtonComp variant="primary" @click="device.serverGetRemotes()"><IconReload /></ButtonComp>
+        <ButtonComp v-if="!remote.poll" variant="primary" @click="device.serverGetRemotes()"
+          ><IconReload
+        /></ButtonComp>
       </h4>
       <template v-if="Object.keys(remote.devices).length > 0">
         <template v-for="(remoteDevice, id) in remote.devices" :key="id">
@@ -51,28 +53,34 @@
         </template>
       </template>
 
-      <template v-else>
+      <!-- <template v-else>
         <div class="grid w-full gap-4">
-          <em class="text-slate-300">No remote devices</em>
+          <em class="text-slate-300">No remote devices</em>          
         </div>
-      </template>
+      </template> -->
 
       <AccordionComp
         class="w-full mt-8 border-t border-t-white/50"
         title="How to connect a device?"
+        :open="Object.keys(remote.devices).length == 0"
       >
         <div class="grid py-4">
-          <ul class="space-y-1">
+          <ul class="space-y-2">
             <li>
-              To connect a device, open <strong>http://{{ server.ip }}:{{ server.port }}</strong> in
-              a browser on the device.
+              Scan the QR code with the remote device.
+              <div class="grid gap-4 py-4 pl-6">
+                <canvas ref="serverQr"></canvas>
+                <p>
+                  Or manually type the IP address: <br />
+                  <strong>{{ server.ip }}/devices</strong>
+                </p>
+              </div>
             </li>
-            <li>Open the menu, and click on <strong>Server.</strong></li>
             <li>
               The device will automatically request access, if you see "Access requested" on the
               device.
             </li>
-            <li>
+            <li v-if="!remote.poll">
               <div class="inline-flex items-center gap-2">
                 Click the
                 <span class="p-1 border rounded-sm"><IconReload class="size-4" /></span> to reload
@@ -85,14 +93,14 @@
                 <span class="flex items-center gap-1 p-1 text-sm border rounded-sm">
                   <IconLink class="size-4" /> Link device
                 </span>
-                to generate a one-time-pin to link the device.
+                A one-time-pin will be shown in a dialog.
               </div>
             </li>
+            <li>Enter the pin on the remote device.</li>
             <li>
-              Enter the pin that is shown on this server in the dialog that will appear on the
+              Congratulations! You have linked a device! You can now start using panels on that
               device.
             </li>
-            <li>Congratulations! You have linked a device! (Hopefully)</li>
           </ul>
         </div>
       </AccordionComp>
@@ -110,7 +118,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, onUpdated, reactive, ref } from 'vue'
 import AlertComp from '../base/AlertComp.vue'
 import { useDeviceStore } from '@/stores/device'
 import {
@@ -128,16 +136,18 @@ import DialogComp from '../base/DialogComp.vue'
 import axios from 'axios'
 import { appUrl } from '@/services/ApiService'
 import AccordionComp from '../base/AccordionComp.vue'
+import QRCode from 'qrcode'
 
 const device = useDeviceStore()
 
 const pinDialog = ref()
+const serverQr = ref()
 
 const server = reactive({
   ip: '',
-  port: '',
 })
-const remote = reactive({ devices: [], pinlink: false })
+
+const remote = reactive({ devices: [], pinlink: false, poll: false })
 
 onMounted(async () => {
   device.serverGetRemotes()
@@ -146,11 +156,32 @@ onMounted(async () => {
     if (state.remote !== remote.devices) remote.devices = device.remote
   })
 
+  getIp()
+})
+
+onUpdated(() => {
+  getIp()
+
+  if (Object.keys(remote.devices).length == 0 && !remote.poll) {
+    remote.poll = setInterval(() => {
+      device.serverGetRemotes()
+    }, 1000)
+  }
+
+  if (Object.keys(remote.devices).length > 0 && remote.poll) {
+    clearInterval(remote.poll)
+    remote.poll = false
+  }
+})
+
+async function getIp() {
   const serverIP = await device.serverGetIP()
   server.ip = serverIP
 
-  server.port = window.__CONFIG__.MCRM__PORT
-})
+  QRCode.toCanvas(serverQr.value, `${server.ip}/devices`, (error) => {
+    if (error) console.log('QRCode error: ', error)
+  })
+}
 
 async function startLink(deviceUuid) {
   const pin = await device.serverStartLink(deviceUuid)

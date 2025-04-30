@@ -35,18 +35,18 @@
   }
 
   &.block__primary {
-    @apply bg-sky-300/40;
+    @apply bg-sky-300/20;
 
     &::before {
-      @apply from-sky-100/40;
+      @apply from-sky-100/20;
     }
   }
 
   &.block__secondary {
-    @apply bg-amber-300/40;
+    @apply bg-amber-300/20;
 
     &::before {
-      @apply from-amber-100/40;
+      @apply from-amber-100/20;
     }
   }
 
