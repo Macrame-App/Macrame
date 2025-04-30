@@ -21,5 +21,4 @@ func MCRMLogInit() {
 
 func MCRMLog(v ...interface{}) {
 	log.Println(v...) // Logs to terminal as well
-	// fmt.Fprintln(logFile, v...) // Logs to log file
 }

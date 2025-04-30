@@ -23,7 +23,7 @@ func main() {
 		apiInit(w, r)
 	})
 
-	// helper.OpenBrowser("http://localhost:" + helper.EnvGet("MCRM__PORT"))
+	helper.OpenBrowser("http://localhost:" + helper.EnvGet("MCRM__PORT"))
 
 	app.MCRMLog("Listening on http://localhost:" + helper.EnvGet("MCRM__PORT"))
 
