@@ -1,3 +1,24 @@
+<!--
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <template>
   <div id="dashboard" class="panel">
     <div class="panel__title">
@@ -8,9 +29,14 @@
       </div>
     </div>
 
-    <div class="panel__content">
+    <div class="panel__content !h-fit !gap-y-16">
       <ServerView v-if="isLocal()" />
       <RemoteView v-else />
+      <div class="grid gap-2 text-slate-300">
+        <h3>About Macrame</h3>
+        <p>Macrame is an open-source application designed to turn any device into a customizable button panel. Whether you're optimizing your workflow or enhancing your gaming experience, Macrame makes it simple to create and link macros to your button panels.</p>
+        <p>For more information, including details on licensing, visit <a href="https://macrame.github.io" target="_blank">https://macrame.github.io</a></p>
+      </div>
     </div>
   </div>
 </template>
