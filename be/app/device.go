@@ -1,21 +1,21 @@
 /*
-Macrame is a program that enables the user to create keyboard macros and button panels. 
-The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+Macrame is a program that enables the user to create keyboard macros and button panels.
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can
 be created with HTML and CSS.
 
 Copyright (C) 2025 Jesse Malotaux
 
-This program is free software: you can redistribute it and/or modify 
-it under the terms of the GNU General Public License as published by 
-the Free Software Foundation, either version 3 of the License, or 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, 
-but WITHOUT ANY WARRANTY; without even the implied warranty of 
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License 
+You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
@@ -35,11 +35,22 @@ import (
 	"time"
 )
 
-func GetServerIP(w http.ResponseWriter, r *http.Request) {
+func ListServerIP(w http.ResponseWriter) {
+	ip, err := GetServerIp()
+
+	if err != nil {
+		MCRMLog("GetServerIP err: ", err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(ip)
+}
+
+func GetServerIp() (string, error) {
 	ifs, err := net.Interfaces()
 	if err != nil {
 		MCRMLog(err)
-		return
+		return "", err
 	}
 
 	for _, ifi := range ifs {
@@ -78,10 +89,11 @@ func GetServerIP(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Found a good IP, return it
-			json.NewEncoder(w).Encode(ip.String())
-			return
+			return ip.String(), nil
 		}
 	}
+
+	return "", fmt.Errorf("No IP found")
 }
 
 func DeviceList(w http.ResponseWriter, r *http.Request) {
