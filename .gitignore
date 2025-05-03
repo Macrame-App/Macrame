@@ -1,9 +1,11 @@
 .env
 config.js
 
-be/devices/*
-be/tmp/
-be/log.txt
+devices/*
+tmp/
+log.txt
+
+Macrame.exe
 
 public
 macros/*

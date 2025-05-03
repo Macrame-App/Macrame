@@ -34,8 +34,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
       <RemoteView v-else />
       <div class="grid gap-2 text-slate-300">
         <h3>About Macrame</h3>
-        <p>Macrame is an open-source application designed to turn any device into a customizable button panel. Whether you're optimizing your workflow or enhancing your gaming experience, Macrame makes it simple to create and link macros to your button panels.</p>
-        <p>For more information, including details on licensing, visit <a href="https://macrame.github.io" target="_blank">https://macrame.github.io</a></p>
+        <p>
+          Macrame is an open-source application designed to turn any device into a customizable
+          button panel. Whether you're optimizing your workflow or enhancing your gaming experience,
+          Macrame makes it simple to create and link macros to your button panels.
+        </p>
+        <p>
+          For more information, including details on licensing, visit
+          <a href="https://macrame.github.io" target="_blank">https://macrame.github.io</a>
+        </p>
       </div>
     </div>
   </div>
