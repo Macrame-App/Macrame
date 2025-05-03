@@ -14,14 +14,14 @@ func InitSystray() {
 }
 
 func OnReady() {
-	systray.SetIcon(getFavicon())
+	systray.SetIcon(getIcon("favicon.ico"))
 	systray.SetTitle("Macrame")
 	systray.SetTooltip("Macrame - Server")
 
 	ip, err := GetServerIp()
 
 	if err == nil {
-		systray.AddMenuItem("IP: "+ip+":"+helper.EnvGet("MCRM__PORT"), "")
+		systray.AddMenuItem("IP: "+ip+":"+helper.EnvGet("MCRM__PORT"), "Server IP")
 	}
 
 	systray.AddSeparator()
@@ -42,6 +42,7 @@ func OnReady() {
 
 func addMCRMItem(name, urlPath string) {
 	m := systray.AddMenuItem(name, name)
+
 	go func() {
 		<-m.ClickedCh
 		helper.OpenBrowser("http://localhost:" + helper.EnvGet("MCRM__PORT") + urlPath)
@@ -52,12 +53,12 @@ func OnExit() {
 	systray.Quit()
 }
 
-func getFavicon() []byte {
-	favicon, err := os.ReadFile("favicon.ico")
+func getIcon(path string) []byte {
+	icon, err := os.ReadFile(path)
 
 	if err != nil {
-		MCRMLog("getFavicon Error: ", err)
+		MCRMLog("getIcon Error: ", err)
 	}
 
-	return favicon
+	return icon
 }
