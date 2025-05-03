@@ -18,9 +18,11 @@ func OnReady() {
 	systray.SetTitle("Macrame")
 	systray.SetTooltip("Macrame - Server")
 
-	ip, _ := GetServerIp()
+	ip, err := GetServerIp()
 
-	systray.AddMenuItem("IP: "+ip+":"+helper.EnvGet("MCRM__PORT"), "")
+	if err == nil {
+		systray.AddMenuItem("IP: "+ip+":"+helper.EnvGet("MCRM__PORT"), "")
+	}
 
 	systray.AddSeparator()
 

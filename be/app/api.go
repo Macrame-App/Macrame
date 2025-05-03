@@ -96,7 +96,7 @@ func ApiPost(w http.ResponseWriter, r *http.Request) {
 	case "/macro/play":
 		PlayMacro("", w, r)
 	case "/device/server/ip":
-		GetServerIP(w)
+		ListServerIP(w)
 	case "/device/list":
 		DeviceList(w, r)
 	case "/device/access/check":
