@@ -4,34 +4,30 @@
 BUILD_DIR="Macrame_$(date +'%m%d%H%M%S')"
 
 # Build the Go application
-cd be
-# go build -o Macrame.exe main.go
 go build -ldflags "-H=windowsgui" -o Macrame.exe main.go
-go build -o Setup.exe setup/setup.go
 
 # Build the frontend
-cd ../fe
+cd fe
 npm run build
 
 cd ../builds
 
 # Create the new build directory
 mkdir $BUILD_DIR
-mkdir $BUILD_DIR/be
 mkdir $BUILD_DIR/macros
 mkdir $BUILD_DIR/panels
+mkdir $BUILD_DIR/panels/test_panel
 mkdir $BUILD_DIR/public
+mkdir $BUILD_DIR/public/assets
 
 # Move the generated files to the new build directory
-cp ../be/Macrame.exe $BUILD_DIR/be/Macrame.exe
-cp ../be/Setup.exe $BUILD_DIR/be/Setup.exe
-cp ../be/favicon.ico $BUILD_DIR/be/favicon.ico
-cp -r ../macros/* $BUILD_DIR/macros/
-cp -r ../panels/* $BUILD_DIR/panels/
+cp ../Macrame.exe $BUILD_DIR/Macrame.exe
+cp ../favicon.ico $BUILD_DIR/favicon.ico
+find ../macros -type f ! -name 'ED-*' -exec cp --parents {} "$BUILD_DIR/macros/" \;
+cp -r ../panels/test_panel/* $BUILD_DIR/panels/test_panel/
 mv ../public/* $BUILD_DIR/public/
 
-cp ../install.bat $BUILD_DIR/install.bat
-cp ../Macrame.lnk $BUILD_DIR/Macrame.lnk
+# cp ../install.bat $BUILD_DIR/install.bat
 
 powershell -Command "Compress-Archive -Path $BUILD_DIR/* -DestinationPath $BUILD_DIR.zip -Force"
 
