@@ -1,0 +1,14 @@
+.env
+config.js
+
+devices/*
+tmp/
+log.txt
+
+Macrame.exe
+
+public
+macros/*
+builds
+node_modules
+ToDo.md

@@ -3,25 +3,29 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueDevTools()],
+  server: {
+    host: 'localhost',
+    port: 5173,
+    watch: {
+      usePolling: true,
+    },
+  },
+  plugins: [vue(), vueDevTools(), tailwindcss()],
+  envDir: '../',
+  assets: ['assets'],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  // server: {
-  //   port: 6969,
-  //   hmr: {
-  //     host: 'localhost',
-  //   },
-  // },
   base: '/',
-  publicDir: '../public',
   build: {
     outDir: '../public',
     sourcemap: true,
+    minify: true,
   },
 })
