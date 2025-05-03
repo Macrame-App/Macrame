@@ -1,14 +1,33 @@
+<!--
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <template>
   <div class="server-overview">
-    <AlertComp type="info">
-      <div class="grid">
-        <strong>This is a remote device.</strong>
-        <em>UUID: {{ device.uuid() }} </em>
-      </div>
+    <AlertComp variant="info">
+      <strong>This is a remote device.</strong>
+      <em>UUID: {{ device.uuid() }} </em>
     </AlertComp>
 
-    <div class="mcrm-block block__light grid gap-4">
-      <h4 class="text-lg flex gap-4 items-center justify-between">
+    <div class="grid gap-4 mcrm-block block__light">
+      <h4 class="flex items-center justify-between gap-4 text-lg">
         <span class="flex gap-4"><IconServer />Server</span>
         <ButtonComp variant="primary" @click="checkServerStatus()"><IconReload /></ButtonComp>
       </h4>
@@ -18,15 +37,25 @@
       </p>
 
       <!-- Alerts -->
-      <AlertComp v-if="server.status === 'authorized'" type="success">Authorized</AlertComp>
-      <AlertComp v-if="server.status === 'unlinked'" type="warning">Not linked</AlertComp>
-      <AlertComp v-if="server.status === 'unauthorized'" type="info">
+      <AlertComp v-if="server.status === 'authorized'" variant="success">Authorized</AlertComp>
+      <AlertComp v-if="server.status === 'unlinked'" variant="warning">Not linked</AlertComp>
+      <AlertComp v-if="server.status === 'unauthorized'" variant="info">
         <div class="grid gap-2">
           <strong>Access requested</strong>
-          <p>
-            Navigate to <em class="font-semibold">http://localhost:6970/devices</em> on your pc to
-            authorize.
-          </p>
+          <ul class="mb-4">
+            <li>
+              Navigate to <em class="font-semibold">http://localhost:{{ server.port }}/devices</em>.
+            </li>
+            <li>
+              <div class="inline-flex flex-wrap items-center gap-2 w-fit">
+                Click on
+                <span class="flex items-center gap-1 p-1 text-sm border rounded-sm">
+                  <IconLink class="size-4" /> Link device
+                </span>
+              </div>
+            </li>
+            <li>Enter the the pin shown on the desktop in the dialog that will appear.</li>
+          </ul>
           <template v-if="server.link == 'checking'">
             <div class="grid grid-cols-[2rem_1fr] gap-2">
               <IconReload class="animate-spin" />
@@ -41,14 +70,6 @@
         </div>
       </AlertComp>
       <ButtonComp
-        v-if="server.status === 'unauthorized'"
-        variant="primary"
-        @click="requestAccess()"
-      >
-        <IconKey />
-        Request access
-      </ButtonComp>
-      <ButtonComp
         variant="danger"
         v-if="server.status === 'authorized'"
         @click="disonnectFromServer()"
@@ -59,15 +80,17 @@
     </div>
     <DialogComp ref="linkPinDialog">
       <template #content>
-        <div class="grid gap-4 w-64">
+        <div class="grid w-64 gap-4">
           <h3>Server link pin:</h3>
           <form class="grid gap-4" @submit.prevent="decryptKey()">
             <input
+              ref="linkPinInput"
               class="input"
               id="input-pin"
               type="text"
               pattern="[0-9]{4}"
               v-model="server.inputPin"
+              autocomplete="off"
             />
             <ButtonComp variant="primary">Enter</ButtonComp>
           </form>
@@ -85,7 +108,7 @@
 // - - if checkAccess -> pingLink -> check for device.tmp (go)
 // - - if [devicePin] -> handshake -> save key local, close dialog, update server status
 
-import { IconKey, IconPlugConnectedX, IconReload, IconServer } from '@tabler/icons-vue'
+import { IconKey, IconLink, IconPlugConnectedX, IconReload, IconServer } from '@tabler/icons-vue'
 import AlertComp from '../base/AlertComp.vue'
 import ButtonComp from '../base/ButtonComp.vue'
 import { onMounted, onUpdated, reactive, ref } from 'vue'
@@ -99,9 +122,11 @@ import { appUrl } from '@/services/ApiService'
 const device = useDeviceStore()
 
 const linkPinDialog = ref()
+const linkPinInput = ref()
 
 const server = reactive({
   host: '',
+  port: window.__CONFIG__.MCRM__PORT,
   status: false,
   link: false,
   inputPin: '',
@@ -115,6 +140,8 @@ onMounted(async () => {
 
 onUpdated(() => {
   if (!server.status) checkServerStatus()
+
+  if (server.status === 'authorized' && server.inputPin) server.inputPin = ''
 })
 
 async function checkServerStatus(request = true) {
@@ -160,11 +187,13 @@ function pingLink() {
     server.encryptedKey = encryptedKey
 
     linkPinDialog.value.toggleDialog(true)
+    linkPinInput.value.focus()
   })
 }
 
 async function decryptKey() {
   const decryptedKey = decryptAES(server.inputPin, server.encryptedKey)
+
   const handshake = await device.remoteHandshake(decryptedKey)
 
   if (handshake) {

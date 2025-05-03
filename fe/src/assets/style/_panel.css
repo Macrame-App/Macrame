@@ -1,3 +1,24 @@
+/*
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 .panel {
   @apply grid 
   grid-rows-[auto_1fr]
@@ -22,19 +43,12 @@
   }
 
   .panel__title {
-    @apply bg-gradient-to-r
-    w-fit
-    from-amber-300
-    to-white/50
-    pt-3
-    pl-16 sm:pl-4
-    bg-clip-text
-    text-transparent;
+    @apply pt-3 pl-16 text-transparent bg-gradient-to-r w-fit from-amber-300 to-white/50 sm:pl-4 bg-clip-text;
   }
 
   .panel__content {
     @apply grid
-    h-full
+    h-[calc(100%-1rem)]
     pt-4 sm:pt-0
     pl-0 sm:pl-4
     overflow-auto;

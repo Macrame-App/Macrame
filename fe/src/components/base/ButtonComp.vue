@@ -1,8 +1,29 @@
+<!--
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <template>
   <template v-if="href">
-    <a :href="href" :class="classString">
+    <RouterLink :to="href" :class="classString">
       <slot />
-    </a>
+    </RouterLink>
   </template>
   <template v-else>
     <button :class="classString">
@@ -12,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   href: String,
@@ -45,7 +66,8 @@ button,
   tracking-wide
   font-normal
   transition-all
-  cursor-pointer;
+  cursor-pointer
+  no-underline;
 
   transition:
     border-color 0.1s ease-in-out,
@@ -64,19 +86,29 @@ button,
     @apply size-5 transition-[stroke] duration-400 ease-in-out;
   }
 
-  &.btn__sm svg {
-    @apply size-4;
+  &.btn__sm {
+    @apply px-3 py-1
+    text-sm;
+
+    svg {
+      @apply size-4;
+    }
   }
 
-  &.btn__lg svg {
-    @apply size-6;
+  &.btn__lg {
+    @apply px-6 py-3
+    text-lg;
+
+    svg {
+      @apply size-6;
+    }
   }
 
   &:hover {
-    @apply !text-white;
+    @apply text-white;
 
     svg {
-      @apply !stroke-white;
+      @apply stroke-current;
     }
   }
 

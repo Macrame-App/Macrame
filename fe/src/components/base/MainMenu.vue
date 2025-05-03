@@ -1,12 +1,29 @@
+<!--
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <template>
   <nav id="main-menu">
-    <button
-      id="menu-toggle"
-      :class="menuOpen ? 'open' : ''"
-      @click="menuOpen = !menuOpen"
-    >
+    <button id="menu-toggle" :class="menuOpen ? 'open' : ''" @click="menuOpen = !menuOpen">
       <img
-        class="logo p-1"
+        class="p-1 logo"
         :class="{ 'opacity-0': menuOpen }"
         src="@/assets/img/Macrame-Logo-gradient.svg"
         aria-hidden="true"
@@ -15,36 +32,30 @@
     </button>
     <ul :class="menuOpen ? 'open' : ''">
       <li>
-        <RouterLink @click="menuOpen = false" to="/">
-          <IconHome />Dashboard
-        </RouterLink>
+        <RouterLink @click="menuOpen = false" to="/"> <IconHome />Dashboard </RouterLink>
       </li>
       <li>
-        <RouterLink @click="menuOpen = false" to="/panels">
-          <IconLayoutGrid />Panels
-        </RouterLink>
+        <RouterLink @click="menuOpen = false" to="/panels"> <IconLayoutGrid />Panels </RouterLink>
       </li>
-      <li>
-        <RouterLink @click="menuOpen = false" to="/macros">
-          <IconKeyboard />Macros
-        </RouterLink>
+      <li v-if="isLocal()">
+        <RouterLink @click="menuOpen = false" to="/macros"> <IconKeyboard />Macros </RouterLink>
       </li>
       <li>
         <RouterLink @click="menuOpen = false" to="/devices">
-          <IconDevices />Device
+          <IconDevices />{{ isLocal() ? 'Devices' : 'Server' }}
         </RouterLink>
       </li>
-      <li>
+      <!-- <li>
         <RouterLink @click="menuOpen = false" to="/settings">
           <IconSettings />Settings
         </RouterLink>
-      </li>
+      </li> -->
     </ul>
   </nav>
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+import { RouterLink } from 'vue-router'
 import {
   IconDevices,
   IconHome,
@@ -52,10 +63,11 @@ import {
   IconLayoutGrid,
   IconSettings,
   IconX,
-} from "@tabler/icons-vue";
-import { ref } from "vue";
+} from '@tabler/icons-vue'
+import { ref } from 'vue'
+import { isLocal } from '@/services/ApiService'
 
-const menuOpen = ref(false);
+const menuOpen = ref(false)
 </script>
 
 <style>
@@ -116,6 +128,8 @@ nav {
         items-center
         gap-2
         px-4 py-2
+        text-white
+        no-underline
         border-transparent
         transition-colors;
 

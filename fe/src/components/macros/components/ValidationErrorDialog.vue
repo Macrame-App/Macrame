@@ -1,6 +1,27 @@
+<!--
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <template>
   <div id="validation-error__dialog" class="dialog__content">
-    <h4 class="text-slate-50 mb-4">There's an error in your macro</h4>
+    <h4 class="mb-4 text-slate-50">There's an error in your macro</h4>
 
     <div class="grid gap-4" v-if="(errors && errors.up.length > 0) || errors.down.length > 0">
       <div v-if="errors.down.length > 0">
@@ -50,7 +71,6 @@ onMounted(() => {
       errors.down =
         mutation.events.newValue !== false ? macroRecorder.state.validationErrors.down : []
     }
-    console.log(mutation)
   })
 })
 </script>

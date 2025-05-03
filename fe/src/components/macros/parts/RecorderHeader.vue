@@ -1,3 +1,24 @@
+<!--
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <template>
   <div class="macro-recorder__header">
     <div class="w-full grid grid-cols-[auto_1fr_auto] gap-2">
@@ -7,6 +28,7 @@
         id="macro-name"
         type="text"
         @input.prevent="changeName($event.target.value)"
+        :value="macroName"
         placeholder="New macro"
       />
       <div :class="`recording__buttons ${!nameSet || macroRecorder.state.edit ? 'disabled' : ''}`">
@@ -14,7 +36,6 @@
         <ButtonComp
           v-if="!macroRecorder.state.record"
           variant="primary"
-          size="sm"
           @click="macroRecorder.state.record = true"
         >
           <IconPlayerRecordFilled class="text-red-500" />Record
@@ -22,7 +43,6 @@
         <ButtonComp
           v-if="macroRecorder.state.record"
           variant="danger"
-          size="sm"
           @click="macroRecorder.state.record = false"
         >
           <IconPlayerStopFilled class="text-white" />Stop
@@ -37,7 +57,6 @@
         <ButtonComp
           v-if="!macroRecorder.state.edit"
           variant="secondary"
-          size="sm"
           @click="macroRecorder.state.edit = true"
         >
           <IconPencil />Edit
@@ -45,7 +64,6 @@
         <ButtonComp
           v-if="macroRecorder.state.edit"
           variant="danger"
-          size="sm"
           @click="macroRecorder.resetEdit()"
         >
           <IconPlayerStopFilled />Stop
@@ -66,11 +84,17 @@ import FixedDelayMenu from '../components/FixedDelayMenu.vue'
 
 import { useMacroRecorderStore } from '@/stores/macrorecorder'
 import EditDialogs from './EditDialogs.vue'
-import { computed, onMounted, onUpdated, ref } from 'vue'
+import { computed, onUpdated, ref } from 'vue'
 
 const macroRecorder = useMacroRecorderStore()
 
+const macroName = computed(() => macroRecorder.macroName)
+
 const nameSet = ref(false)
+
+onUpdated(() => {
+  nameSet.value = macroName.value && macroName.value.length > 0
+})
 
 function changeName(name) {
   macroRecorder.changeName(name)

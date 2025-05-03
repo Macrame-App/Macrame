@@ -1,7 +1,28 @@
+/*
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import { filterKey, isRepeat, invalidMacro } from '../services/MacroRecordService'
+import { filterKey, isRepeat, invalidMacro, translateJSON } from '../services/MacroRecordService'
 import axios from 'axios'
 import { appUrl } from '@/services/ApiService'
 
@@ -48,6 +69,8 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
 
   // Setters - Actions
   const recordStep = (e, direction = false, key = false) => {
+    if ((e.ctrlKey, e.shiftKey, e.altKey, e.metaKey)) e.preventDefault()
+
     const lastStep = steps.value[steps.value.length - 1]
 
     let stepVal = {}
@@ -130,7 +153,6 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
 
   const changeName = (name) => {
     macroName.value = name
-    console.log(macroName.value)
   }
 
   const changeDelay = (fixed) => {
@@ -164,29 +186,58 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     state.value.editDelay = false
   }
 
-  const reset = () => {
+  const resetMacro = () => {
     state.value.record = false
     delay.value.start = 0
+    macroName.value = ''
     steps.value = []
 
     if (state.value.edit) resetEdit()
   }
 
-  const save = () => {
+  const checkMacro = async () => {
+    const resp = await axios.post(appUrl() + '/macro/check', {
+      macro: macroName.value,
+    })
+
+    return resp.data
+  }
+
+  const saveMacro = async () => {
     state.value.validationErrors = invalidMacro(steps.value)
 
     if (state.value.validationErrors) return false
 
-    axios
-      .post(appUrl() + '/macro/record', { name: macroName.value, steps: steps.value })
-      .then((data) => {
-        console.log(data)
-      })
-    return true
+    const resp = await axios.post(appUrl() + '/macro/record', {
+      name: macroName.value,
+      steps: steps.value,
+    })
+
+    return resp.status == 200
+  }
+
+  const deleteMacro = async (macroFilename) => {
+    const resp = await axios.post(appUrl() + '/macro/delete', {
+      macro: macroFilename,
+    })
+
+    if (resp.status == 200) return resp.data
+    else return false
+  }
+
+  const openMacro = async (macroFileName, name) => {
+    const openResp = await axios.post(appUrl() + '/macro/open', {
+      macro: macroFileName,
+    })
+
+    if (openResp.data) steps.value = translateJSON(openResp.data)
+
+    macroName.value = name
   }
 
   return {
     state,
+    macroName,
     steps,
     delay,
     getEditKey,
@@ -200,7 +251,10 @@ export const useMacroRecorderStore = defineStore('macrorecorder', () => {
     changeDelay,
     toggleEdit,
     resetEdit,
-    reset,
-    save,
+    resetMacro,
+    checkMacro,
+    saveMacro,
+    deleteMacro,
+    openMacro,
   }
 })

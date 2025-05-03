@@ -1,0 +1,253 @@
+@import url(https://fonts.bunny.net/css?family=orbitron:400,600,800);
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@layer theme {
+  /* :root {
+  } */
+}
+
+html,
+body,
+#panel-html__body {
+  @apply relative;
+}
+
+#panel-html__body {
+  --font-sans: "Orbitron", sans-serif;
+  @apply font-sans text-sm font-light tracking-wide bg-gray-900 text-slate-50 size-full;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.group-left,
+.group-middle,
+.group-right {
+  @apply grid gap-2 h-fit;
+}
+
+.ed-panel {
+  @apply w-full p-2 border h-fit rounded-b-xl;
+
+  h3,
+  h4 {
+    @apply m-0 mb-1 font-extralight;
+  }
+
+  h3 {
+    @apply text-base;
+  }
+
+  h4 {
+    @apply text-sm;
+  }
+
+  &.pnl__blue {
+    @apply border-sky-300 bg-sky-500/30;
+
+    h3,
+    h4 {
+      @apply text-sky-100;
+
+      text-shadow: 0 0 0.2em var(--color-sky-300);
+    }
+  }
+
+  &.pnl__yellow {
+    @apply border-amber-300 bg-amber-500/30;
+
+    h3,
+    h4 {
+      @apply text-amber-100;
+
+      text-shadow: 0 0 0.2em var(--color-amber-300);
+    }
+  }
+
+  &.pnl__orange {
+    @apply border-orange-300 bg-orange-500/30;
+
+    h3,
+    h4 {
+      @apply text-orange-100;
+
+      text-shadow: 0 0 0.2em var(--color-orange-300);
+    }
+  }
+
+  &.pnl__red {
+    @apply border-rose-300 bg-rose-500/30;
+
+    h3,
+    h4 {
+      @apply text-rose-100;
+
+      text-shadow: 0 0 0.2em var(--color-rose-400);
+    }
+  }
+
+  &.pnl__white {
+    @apply border-white bg-white/20;
+
+    h3,
+    h4 {
+      @apply text-white;
+
+      text-shadow: 0 0 0.2em var(--color-white);
+    }
+  }
+}
+
+.ed-button {
+  @apply flex items-center justify-center px-4 py-2 text-base text-center rounded-lg border-3;
+
+  svg {
+    @apply block !size-5;
+  }
+
+  &.btn__vertical {
+    @apply flex-col;
+  }
+
+  &.btn__filled {
+    @apply text-gray-900;
+  }
+
+  &.btn__orange {
+    @apply text-orange-100 border-orange-400 bg-orange-500/50;
+
+    &.btn__filled {
+      @apply bg-orange-400;
+    }
+  }
+
+  &.btn__yellow {
+    @apply text-orange-100 border-amber-400 bg-amber-500/50;
+
+    &.btn__filled {
+      @apply bg-amber-400;
+    }
+  }
+
+  &.btn__blue {
+    @apply border-sky-400 bg-sky-500/50 text-sky-100;
+
+    &.btn__filled {
+      @apply bg-sky-500;
+    }
+  }
+
+  &.btn__red {
+    @apply border-rose-500 bg-rose-600/50 text-rose-100;
+
+    &.btn__filled {
+      @apply bg-rose-600;
+    }
+  }
+
+  &.btn__white {
+    @apply border-white bg-white/30;
+
+    &.btn__filled {
+      @apply bg-white;
+    }
+  }
+}
+
+.ed-button-group__horizontal {
+  @apply grid divide-x;
+
+  .ed-button {
+    @apply rounded-none;
+
+    &:first-child {
+      @apply rounded-l-lg;
+    }
+
+    &:last-child {
+      @apply rounded-r-lg;
+    }
+  }
+}
+
+.ed-button-group__vertical {
+  @apply grid divide-y;
+
+  .ed-button {
+    @apply rounded-none;
+
+    &:first-child {
+      @apply rounded-t-lg;
+    }
+
+    &:last-child {
+      @apply rounded-b-lg;
+    }
+  }
+}
+
+.ed-toggle {
+  .toggle__wrapper {
+    @apply relative p-1.5 border-2 rounded-full size-full;
+  }
+
+  .toggle__indicator {
+    @apply absolute transition rounded-full aspect-square;
+  }
+
+  &.toggle__horizontal {
+    @apply w-20 h-12;
+
+    .toggle__indicator {
+      @apply left-1.5  translate-x-0  h-[calc(100%-.75rem)];
+    }
+
+    &[active] .toggle__indicator {
+      @apply translate-x-full;
+    }
+  }
+
+  &.toggle__vertical {
+    @apply w-12 h-20;
+
+    .toggle__indicator {
+      @apply top-1.5 translate-y-0 w-[calc(100%-.75rem)];
+    }
+    &[active] .toggle__indicator {
+      @apply translate-y-full;
+    }
+  }
+}
+
+dialog[open] {
+  @apply absolute -translate-x-1/2 -translate-y-1/2 bg-transparent border-0 outline-0 top-1/2 left-1/2;
+  @apply backdrop:absolute backdrop:bg-black/50;
+
+  .dialog__close {
+    @apply absolute text-white top-3 right-3;
+  }
+}
+
+#clock {
+  @apply relative flex pr-16 text-3xl w-fit;
+
+  i {
+    @apply pl-1 not-italic;
+  }
+
+  .hours-minutes,
+  .seconds {
+    @apply flex gap-1;
+  }
+
+  span {
+    @apply inline-block w-[.75em] text-center;
+  }
+
+  sup {
+    @apply absolute right-0 w-16 pl-2 text-lg text-left opacity-80;
+  }
+}

@@ -1,3 +1,24 @@
+/*
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
@@ -50,11 +71,21 @@ export const useDeviceStore = defineStore('device', () => {
     localStorage.removeItem('deviceKey')
   }
 
+  const serverGetIP = async () => {
+    const request = await axios.post(appUrl() + '/device/server/ip')
+    return `http://${request.data}:${window.__CONFIG__.MCRM__PORT}`
+  }
+
   // Server application
-  const serverGetRemotes = async (remoteUuid) => {
-    axios.post(appUrl() + '/device/list', { uuid: remoteUuid }).then((data) => {
-      if (data.data.devices) remote.value = data.data.devices
-    })
+  const serverGetRemotes = async (count = false) => {
+    const request = await axios.post(appUrl() + '/device/list')
+
+    if (!request.data.devices) return false
+
+    remote.value = request.data.devices
+
+    if (!count) return remote.value
+    else return Object.keys(remote.value).length
   }
 
   const serverStartLink = async (deviceUuid) => {
@@ -78,8 +109,6 @@ export const useDeviceStore = defineStore('device', () => {
     return request
   }
   const remotePingLink = async (cb) => {
-    // const linkRequest = await axios.post(appUrl() + '/device/link/ping', { uuid: deviceUuid })
-    // if (linkRequest.data)
     const pingInterval = setInterval(() => {
       axios.post(appUrl() + '/device/link/ping', { uuid: uuid() }).then((data) => {
         if (data.data) {
@@ -90,12 +119,17 @@ export const useDeviceStore = defineStore('device', () => {
     }, 1000)
   }
 
-  const remoteHandshake = async (key) => {
+  const remoteHandshake = async (keyStr = false) => {
+    if (!keyStr) keyStr = key()
+
+    if (!keyStr) return false
+
     const handshake = await axios.post(appUrl() + '/device/handshake', {
       uuid: uuid(),
-      shake: encryptAES(key, getDateStr()),
+      shake: encryptAES(keyStr, getDateStr()),
     })
-    console.log(handshake)
+
+    if (!handshake.data) removeDeviceKey()
 
     return handshake.data
   }
@@ -108,6 +142,7 @@ export const useDeviceStore = defineStore('device', () => {
     key,
     setDeviceKey,
     removeDeviceKey,
+    serverGetIP,
     serverGetRemotes,
     serverStartLink,
     remoteCheckServerAccess,

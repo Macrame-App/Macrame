@@ -16,16 +16,16 @@ export default defineConfig({
   },
   plugins: [vue(), vueDevTools(), tailwindcss()],
   envDir: '../',
+  assets: ['assets'],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   base: '/',
-  // publicDir: "../public",
   build: {
     outDir: '../public',
-    sourcemap: false,
-    minify: false,
+    sourcemap: true,
+    minify: true,
   },
 })

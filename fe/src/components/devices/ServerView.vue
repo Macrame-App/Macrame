@@ -1,63 +1,136 @@
+<!--
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <template>
   <div class="device-overview">
-    <AlertComp type="info">
-      <div class="grid">
-        <strong>This is a server!</strong>
-        <em>UUID: {{ device.uuid() }} </em>
-      </div>
+    <AlertComp variant="info">
+      <strong>This is a server!</strong>
+      <em>UUID: {{ device.uuid() }} </em>
     </AlertComp>
 
-    <div class="mcrm-block block__light flex flex-wrap items-start gap-4">
-      <h4 class="w-full flex gap-4 items-center justify-between mb-4">
-        <span class="flex gap-4"> <IconDevices />Remote devices </span>
-        <ButtonComp variant="primary" @click="device.serverGetRemotes()"><IconReload /></ButtonComp>
+    <div class="flex flex-wrap items-start gap-4 mcrm-block block__light">
+      <h4 class="flex items-center justify-between w-full gap-4 mb-4">
+        <span class="flex gap-4">
+          <IconDevices />{{ Object.keys(remote.devices).length }}
+          {{ Object.keys(remote.devices).length == 1 ? 'Device' : 'Devices' }}
+        </span>
+
+        <ButtonComp v-if="!remote.poll" variant="primary" @click="device.serverGetRemotes()"
+          ><IconReload
+        /></ButtonComp>
       </h4>
-      <!-- {{ Object.keys(remote.devices).length }} -->
       <template v-if="Object.keys(remote.devices).length > 0">
-        <div
-          class="mcrm-block block__dark block-size__sm w-64 grid !gap-4 content-start"
-          v-for="(remoteDevice, id) in remote.devices"
-          :key="id"
-        >
-          <div class="grid gap-2">
-            <h5 class="grid grid-cols-[auto_1fr] gap-2">
-              <IconDeviceUnknown v-if="remoteDevice.settings.type == 'unknown'" />
-              <IconDeviceMobile v-if="remoteDevice.settings.type == 'mobile'" />
-              <IconDeviceTablet v-if="remoteDevice.settings.type == 'tablet'" />
-              <IconDeviceDesktop v-if="remoteDevice.settings.type == 'desktop'" />
-              <span class="w-full truncate">
-                {{ remoteDevice.settings.name }}
-              </span>
-            </h5>
-            <em>{{ id }}</em>
+        <template v-for="(remoteDevice, id) in remote.devices" :key="id">
+          <div class="mcrm-block block__dark block-size__sm w-64 grid !gap-4 content-start">
+            <div class="grid gap-2">
+              <h5 class="grid grid-cols-[auto_1fr] gap-2">
+                <IconDeviceUnknown v-if="remoteDevice.settings.type == 'unknown'" />
+                <IconDeviceMobile v-if="remoteDevice.settings.type == 'mobile'" />
+                <IconDeviceTablet v-if="remoteDevice.settings.type == 'tablet'" />
+                <IconDeviceDesktop v-if="remoteDevice.settings.type == 'desktop'" />
+                <span class="w-full truncate">
+                  {{ remoteDevice.settings.name }}
+                </span>
+              </h5>
+              <em>{{ id }}</em>
+            </div>
+
+            <template v-if="remoteDevice.key">
+              <AlertComp variant="success">Authorized</AlertComp>
+              <ButtonComp variant="danger" @click="unlinkDevice(id)">
+                <IconLinkOff />Unlink device
+              </ButtonComp>
+            </template>
+
+            <template v-else>
+              <AlertComp variant="warning">Unauthorized</AlertComp>
+              <ButtonComp variant="primary" @click="startLink(id)">
+                <IconLink />Link device
+              </ButtonComp>
+            </template>
+
+            <template v-if="remote.pinlink.uuid == id">
+              <AlertComp variant="info">One time pin: {{ remote.pinlink.pin }}</AlertComp>
+            </template>
           </div>
-          <template v-if="remoteDevice.key">
-            <AlertComp type="success">Authorized</AlertComp>
-            <ButtonComp variant="danger" @click="unlinkDevice(id)">
-              <IconLinkOff />Unlink device
-            </ButtonComp>
-          </template>
-          <template v-else>
-            <AlertComp type="warning">Unauthorized</AlertComp>
-            <ButtonComp variant="primary" @click="startLink(id)">
-              <IconLink />Link device
-            </ButtonComp>
-          </template>
-          <template v-if="remote.pinlink.uuid == id">
-            <AlertComp type="info">One time pin: {{ remote.pinlink.pin }}</AlertComp>
-          </template>
-        </div>
+        </template>
       </template>
-      <template v-else>
+
+      <!-- <template v-else>
         <div class="grid w-full gap-4">
-          <em class="text-slate-300">No remote devices</em>
+          <em class="text-slate-300">No remote devices</em>          
         </div>
-      </template>
+      </template> -->
+
+      <AccordionComp
+        class="w-full mt-8 border-t border-t-white/50"
+        title="How to connect a device?"
+        :open="Object.keys(remote.devices).length == 0"
+      >
+        <div class="grid py-4">
+          <ul class="space-y-2">
+            <li>
+              Scan the QR code with the remote device.
+              <div class="grid gap-4 py-4 pl-6">
+                <canvas ref="serverQr"></canvas>
+                <p>
+                  Or manually type the IP address: <br />
+                  <strong>{{ server.ip }}/devices</strong>
+                </p>
+              </div>
+            </li>
+            <li>
+              The device will automatically request access, if you see "Access requested" on the
+              device.
+            </li>
+            <li v-if="!remote.poll">
+              <div class="inline-flex items-center gap-2">
+                Click the
+                <span class="p-1 border rounded-sm"><IconReload class="size-4" /></span> to reload
+                the devices.
+              </div>
+            </li>
+            <li>
+              <div class="inline-flex flex-wrap items-center gap-2 w-fit">
+                Click on
+                <span class="flex items-center gap-1 p-1 text-sm border rounded-sm">
+                  <IconLink class="size-4" /> Link device
+                </span>
+                A one-time-pin will be shown in a dialog.
+              </div>
+            </li>
+            <li>Enter the pin on the remote device.</li>
+            <li>
+              Congratulations! You have linked a device! You can now start using panels on that
+              device.
+            </li>
+          </ul>
+        </div>
+      </AccordionComp>
+
       <DialogComp ref="pinDialog">
         <template #content>
           <div class="grid gap-4">
             <h3>Pin code</h3>
-            <span class="text-4xl font-mono tracking-wide">{{ remote.pinlink.pin }}</span>
+            <span class="font-mono text-4xl tracking-wide">{{ remote.pinlink.pin }}</span>
           </div>
         </template>
       </DialogComp>
@@ -66,12 +139,7 @@
 </template>
 
 <script setup>
-// TODO
-// - startLink -> responsePin also in device block
-// - startLink -> poll removal of pin file, if removed close dialog, update device list
-// - Make unlink work
-
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, onUpdated, reactive, ref } from 'vue'
 import AlertComp from '../base/AlertComp.vue'
 import { useDeviceStore } from '@/stores/device'
 import {
@@ -88,20 +156,53 @@ import ButtonComp from '../base/ButtonComp.vue'
 import DialogComp from '../base/DialogComp.vue'
 import axios from 'axios'
 import { appUrl } from '@/services/ApiService'
+import AccordionComp from '../base/AccordionComp.vue'
+import QRCode from 'qrcode'
 
 const device = useDeviceStore()
 
 const pinDialog = ref()
+const serverQr = ref()
 
-const remote = reactive({ devices: [], pinlink: false })
+const server = reactive({
+  ip: '',
+})
 
-onMounted(() => {
+const remote = reactive({ devices: [], pinlink: false, poll: false })
+
+onMounted(async () => {
   device.serverGetRemotes()
 
   device.$subscribe((mutation, state) => {
-    if (Object.keys(state.remote).length) remote.devices = device.remote
+    if (state.remote !== remote.devices) remote.devices = device.remote
   })
+
+  getIp()
 })
+
+onUpdated(() => {
+  getIp()
+
+  if (Object.keys(remote.devices).length == 0 && !remote.poll) {
+    remote.poll = setInterval(() => {
+      device.serverGetRemotes()
+    }, 1000)
+  }
+
+  if (Object.keys(remote.devices).length > 0 && remote.poll) {
+    clearInterval(remote.poll)
+    remote.poll = false
+  }
+})
+
+async function getIp() {
+  const serverIP = await device.serverGetIP()
+  server.ip = serverIP
+
+  QRCode.toCanvas(serverQr.value, `${server.ip}/devices`, (error) => {
+    if (error) console.log('QRCode error: ', error)
+  })
+}
 
 async function startLink(deviceUuid) {
   const pin = await device.serverStartLink(deviceUuid)
@@ -135,7 +236,9 @@ function resetPinLink() {
 
 function unlinkDevice(id) {
   axios.post(appUrl() + '/device/link/remove', { uuid: id }).then((data) => {
-    if (data.data) device.serverGetRemotes()
+    if (data.data) {
+      device.serverGetRemotes()
+    }
   })
 }
 </script>

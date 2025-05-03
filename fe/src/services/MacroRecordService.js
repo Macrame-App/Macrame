@@ -1,3 +1,24 @@
+/*
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 const keyMap = {
   // Modifier keys
   Control: 'Ctrl',
@@ -124,4 +145,48 @@ export const invalidMacro = (steps) => {
   if (upKeys.length === 0 && downKeys.length === 0) return false
 
   return { down: downKeys, up: upKeys }
+}
+
+export const translateJSON = (json) => {
+  const steps = []
+
+  json.forEach((step) => {
+    if (step.type === 'delay') steps.push(step)
+    if (step.type === 'key') steps.push(codeToStep(step.code, step.direction))
+  })
+
+  return steps
+}
+
+export const codeToStep = (code, direction) => {
+  let key = ''
+  let location = 0
+  let codeStr = code
+
+  if (code.includes('Left')) {
+    key = code.replace('Left', '')
+    location = 1
+  }
+  if (code.includes('Right')) {
+    key = code.replace('Right', '')
+    location = 2
+  }
+  if (code.includes('Numpad')) {
+    key = code.replace('Numpad', '')
+    location = 3
+  }
+
+  if (code.includes('Media')) codeStr = ''
+
+  if (key === '') key = code
+
+  const stepObj = {
+    type: 'key',
+    code: codeStr,
+    key: key,
+    location: location,
+    direction: direction,
+  }
+
+  return { ...stepObj, keyObj: filterKey(stepObj) }
 }

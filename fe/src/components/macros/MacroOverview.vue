@@ -1,40 +1,115 @@
+<!--
+Macrame is a program that enables the user to create keyboard macros and button panels. 
+The macros are saved as simple JSON files and can be linked to the button panels. The panels can 
+be created with HTML and CSS.
+
+Copyright (C) 2025 Jesse Malotaux
+
+This program is free software: you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation, either version 3 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License 
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <template>
   <div class="macro-overview mcrm-block block__dark">
     <h4 class="border-b-2 border-transparent">Saved Macros</h4>
     <div class="macro-overview__list">
+      <LoadComp :loading="macros.loading" text="Loading macros..." />
       <div class="macro-item" v-for="(macro, i) in macros.list" :key="i">
-        <ButtonComp variant="dark" class="w-full" size="sm" @click.prevent="runMacro(macro)">
-          <IconKeyboard /> {{ macro }}
+        <ButtonComp
+          :variant="macroRecorder.macroName === macro.name ? 'secondary' : 'dark'"
+          class="overview__macro-open"
+          size="sm"
+          @click="macroRecorder.openMacro(macro.macroname, macro.name)"
+        >
+          <IconKeyboard /> <span>{{ macro.name }}</span>
         </ButtonComp>
+        <div class="overview__macro-delete">
+          <ButtonComp
+            class="!text-red-500 hover:!text-red-300"
+            variant="ghost"
+            size="sm"
+            @click="startDelete(macro.name)"
+          >
+            <IconTrash />
+          </ButtonComp>
+        </div>
       </div>
     </div>
+    <DialogComp ref="deleteDialog">
+      <template #content>
+        <div class="grid gap-2">
+          <h4 class="pr-4">Are you sure you want to delete:</h4>
+          <h3 class="mb-2 text-center text-sky-500">{{ macroToBeDeleted }}</h3>
+          <div class="flex justify-between">
+            <ButtonComp size="sm" variant="subtle" @click="deleteDialog.toggleDialog(false)">
+              No
+            </ButtonComp>
+            <ButtonComp size="sm" variant="danger" @click="deleteMacro()">Yes</ButtonComp>
+          </div>
+        </div>
+      </template>
+    </DialogComp>
   </div>
 </template>
 
 <script setup>
-import { IconKeyboard } from '@tabler/icons-vue'
+// TODO
+// - delete macro
+
+import { IconKeyboard, IconTrash } from '@tabler/icons-vue'
 import ButtonComp from '../base/ButtonComp.vue'
-import { onMounted, reactive } from 'vue'
-import axios from 'axios'
-import { appUrl, isLocal } from '@/services/ApiService'
-import { AuthCall } from '@/services/EncryptService'
+import { onMounted, reactive, ref } from 'vue'
+import { GetMacroList } from '@/services/MacroService'
+import LoadComp from '../base/LoadComp.vue'
+import { useMacroRecorderStore } from '@/stores/macrorecorder'
+import DialogComp from '../base/DialogComp.vue'
 
 const macros = reactive({
+  loading: true,
   list: [],
 })
 
+const macroRecorder = useMacroRecorderStore()
+
+const macroToBeDeleted = ref('')
+const deleteDialog = ref()
+
 onMounted(() => {
-  axios.post(appUrl() + '/macro/list').then((data) => {
-    if (data.data.length > 0) macros.list = data.data
-  })
+  loadMacroList()
 })
 
-function runMacro(macro) {
-  const data = isLocal() ? { macro: macro } : AuthCall({ macro: macro })
+const loadMacroList = async () => {
+  const list = await GetMacroList()
+  macros.list = list
+  macros.loading = false
+}
 
-  axios.post(appUrl() + '/macro/play', data).then((data) => {
-    console.log(data)
-  })
+const startDelete = (macroFilename) => {
+  macroToBeDeleted.value = macroFilename
+  deleteDialog.value.toggleDialog(true)
+}
+
+const deleteMacro = async () => {
+  const resp = await macroRecorder.deleteMacro(macroToBeDeleted.value)
+
+  if (resp) {
+    deleteDialog.value.toggleDialog(false)
+
+    if (macroToBeDeleted.value === macroRecorder.macroName) macroRecorder.resetMacro()
+
+    macroToBeDeleted.value = ''
+    loadMacroList()
+  }
 }
 </script>
 
@@ -57,16 +132,32 @@ function runMacro(macro) {
   }
 
   .macro-overview__list {
-    @apply grid 
+    @apply flex
+    flex-col 
+    pr-1
+    -mr-1
     gap-1
-    content-start;
+    h-[calc(100vh-11.7rem)]
+    overflow-auto;
   }
 
   .macro-item {
-    @apply flex items-center;
+    @apply grid items-center grid-cols-[1fr_0fr] transition-[grid-template-columns] delay-0 duration-300;
 
-    button {
-      @apply w-full;
+    &:hover {
+      @apply grid-cols-[1fr_auto] delay-500;
+    }
+
+    button.overview__macro-open {
+      @apply w-full grid grid-cols-[1rem_1fr] justify-items-start;
+
+      span {
+        @apply truncate w-full text-left;
+      }
+    }
+
+    div.overview__macro-delete {
+      @apply grid overflow-hidden transition;
     }
   }
 }

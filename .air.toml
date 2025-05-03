@@ -1,0 +1,17 @@
+# Working directory
+root = "."
+
+# The main Go file
+main = "main.go"
+
+bin = "tmp/main.exe"
+
+# Watching all Go files, excluding certain directories
+[build]
+  cmd = "go build -o ./tmp/main.exe main.go"
+  include_ext = ["go"]
+  exclude_dir = ["fe", "panels", "builds"]
+
+# Restart on file changes
+[log]
+  time = true
