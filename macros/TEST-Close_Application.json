@@ -1,0 +1,9 @@
+[
+  { "code": "lalt", "direction": "down", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "f4", "direction": "down", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "lalt", "direction": "up", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "f4", "direction": "up", "type": "key" }
+]

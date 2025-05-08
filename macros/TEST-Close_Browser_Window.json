@@ -1,0 +1,13 @@
+[
+  { "code": "lctrl", "direction": "down", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "lshift", "direction": "down", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "w", "direction": "down", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "lctrl", "direction": "up", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "lshift", "direction": "up", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "w", "direction": "up", "type": "key" }
+]

@@ -2,13 +2,19 @@
 config.js
 
 devices/*
-tmp/
+tmp
 log.txt
 
 Macrame.exe
 
-public
+public/*
+
 macros/*
+!macros/TEST-*
+
+panels/*
+!panels/test_panel
+
 builds
 node_modules
 ToDo.md

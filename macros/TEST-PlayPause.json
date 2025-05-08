@@ -1,0 +1,1 @@
+[{"code":"audio_play|audio_pause","direction":"down","type":"key"},{"type":"delay","value":15},{"code":"audio_play|audio_pause","direction":"up","type":"key"}]

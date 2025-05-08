@@ -36,7 +36,7 @@ func EnvGet(key string) string {
 
 	if !configFileExists() {
 		CreateConfigFile(configPath)
-		CheckFeDevDir()
+		CheckUIDevDir()
 	}
 
 	data, err := os.ReadFile(configPath)
@@ -63,12 +63,12 @@ func configFileExists() bool {
 	return err == nil
 }
 
-func CheckFeDevDir() {
+func CheckUIDevDir() {
 	log.Println("Checking FE dev directory...")
-	_, err := os.Stat("fe")
+	_, err := os.Stat("ui")
 
 	if err != nil {
-		log.Println("Error checking FE dev directory:", err)
+		log.Println("Error checking ui dev directory:", err)
 		return
 	}
 
@@ -83,7 +83,7 @@ func copyConfigToFe() {
 		return
 	}
 
-	if err := os.WriteFile("fe/config.js", data, 0644); err != nil {
+	if err := os.WriteFile("ui/config.js", data, 0644); err != nil {
 		log.Println("Error writing config.js:", err)
 	}
 }
