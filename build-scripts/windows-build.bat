@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 
 REM Step 1: Build Macrame Go application for Windows
 echo Building Macrame Go Application for Windows...
@@ -9,7 +10,7 @@ IF %ERRORLEVEL% NEQ 0 (
   echo Go build failed!
   exit /b %ERRORLEVEL%
 ) ELSE (
-  echo Go build was succesful! 
+  echo Go build was successful!
 )
 
 REM Step 2: Build Macrame Vue UI
@@ -30,10 +31,12 @@ IF %ERRORLEVEL% NEQ 0 (
     exit /b %ERRORLEVEL%
 )
 
-REM Step 3: Cleanup root directory of build files. 
+cd ..
+
+REM Step 3: Cleanup root directory of build files.
 echo Cleaning up root directory...
 
-echo Removing directories: app, ui and build-scripts
+echo Removing directories: app, ui, and build-scripts
 rmdir /s /q app
 rmdir /s /q ui
 rmdir /s /q build-scripts
@@ -46,6 +49,4 @@ for %%F in (*) do (
     )
 )
 
-echo Build and cleanup complete. 
-
-
+echo Build and cleanup complete.
