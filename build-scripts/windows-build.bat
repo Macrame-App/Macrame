@@ -31,27 +31,4 @@ IF %ERRORLEVEL% NEQ 0 (
     exit /b %ERRORLEVEL%
 )
 
-cd ..
-
-REM Step 3: Cleanup root directory of build files.
-echo Cleaning up root directory...
-
-IF EXIST app (
-    echo Deleting app directory...
-    rmdir /s /q app
-)
-
-IF EXIST ui (
-    echo Deleting ui directory...
-    rmdir /s /q ui
-)
-
-for %%F in (*) do (
-    set "file=%%~nxF"
-    if /I not "!file!"=="Macrame.exe" if /I not "!file!"=="favicon.ico" if /I not "!file!"=="README.md" (
-        echo Deleting !file!
-        del /f /q "%%F"
-    )
-)
-
-echo Build and cleanup complete.
+echo Build complete.

@@ -32,11 +32,24 @@ jobs:
         shell: cmd
         run: .\build-scripts\windows-build.bat
 
-      - name: Cleanup build-scripts directory
-        shell: bash
+      - name: Cleanup root directory
+        shell: pwsh
         run: |
-          echo "Removing build-scripts directory..."
-          rmdir /s /q build-scripts
+          $folders = @("app", "ui", "build-scripts")
+          foreach ($folder in $folders) {
+            if (Test-Path $folder) {
+              Remove-Item -Recurse -Force -Path $folder
+              Write-Output "Removed development folder: $folder"
+            } else {
+              Write-Output "$folder does not exist"
+            }
+          }
+
+          # Delete all files except: Macrame.exe, favicon.ico, README.md
+          Get-ChildItem -File | Where-Object { $_.Name -notin @("Macrame.exe", "favicon.ico", "README.md") } | ForEach-Object {
+            Write-Output "Deleting file: $($_.Name)"
+            Remove-Item -Force $_.FullName
+          }
 
       - name: Commit and push build artifacts
         shell: bash
