@@ -7,7 +7,7 @@ log.txt
 
 Macrame.exe
 
-public
+public/*
 macros/*
 builds
 node_modules
