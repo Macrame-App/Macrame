@@ -1,0 +1,48 @@
+name: Release Build (Windows)
+
+on:
+  push:
+    branches:
+      - "release/**"
+
+jobs:
+  build-and-merge:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout the release branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from branch name
+        id: extract
+        shell: bash
+        run: |
+          version="${GITHUB_REF##*/}"
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Set up Git
+        shell: bash
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Run build script
+        shell: cmd
+        run: .\build-scripts\windows-build.bat
+
+      - name: Commit and push build artifacts
+        shell: bash
+        run: |
+          git add -A
+          git commit -m "Automated release build for version: ${{ steps.extract.outputs.version }}" || echo "No changes to commit"
+          git push origin ${{ github.ref }}
+
+      - name: Fetch and force merge into main
+        shell: bash
+        run: |
+          git fetch origin main
+          git checkout main
+          git merge -X theirs ${{ github.ref }} -m "Merging release version ${{ steps.extract.outputs.version }} into main"
+          git push origin main
