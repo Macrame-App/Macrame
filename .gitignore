@@ -2,7 +2,7 @@
 config.js
 
 devices/*
-tmp/
+tmp
 log.txt
 
 Macrame.exe
