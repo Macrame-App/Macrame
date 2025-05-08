@@ -1,6 +1,8 @@
 # <img src="favicon.ico" width="24" alt="Macrame icon" /> Macrame
 
-*The current release isn't yet public.*
+*Version 1.0.0 is now available!*
+
+Click on the "Code" button to download the zip to get started!
 
 Turn Any Device into a button panel. Open-source, easy, and built to supercharge your workflow or gaming.
 Macrame is released under the GPL V3 licence. More information can be found at: [Macrame License](https://macrame-app.github.io/license.html)
