@@ -36,10 +36,15 @@ cd ..
 REM Step 3: Cleanup root directory of build files.
 echo Cleaning up root directory...
 
-echo Removing directories: app, ui, and build-scripts
-rmdir /s /q app
-rmdir /s /q ui
-rmdir /s /q build-scripts
+IF EXIST app (
+    echo Deleting app directory...
+    rmdir /s /q app
+)
+
+IF EXIST ui (
+    echo Deleting ui directory...
+    rmdir /s /q ui
+)
 
 for %%F in (*) do (
     set "file=%%~nxF"

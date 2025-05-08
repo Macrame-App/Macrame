@@ -32,6 +32,12 @@ jobs:
         shell: cmd
         run: .\build-scripts\windows-build.bat
 
+      - name: Cleanup build-scripts directory
+        shell: bash
+        run: |
+          echo "Removing build-scripts directory..."
+          rmdir /s /q build-scripts
+
       - name: Commit and push build artifacts
         shell: bash
         run: |
