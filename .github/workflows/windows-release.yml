@@ -5,8 +5,11 @@ on:
     branches:
       - "release/**"
 
+permissions:
+  contents: write
+
 jobs:
-  build-and-merge:
+  windows-release-build:
     runs-on: windows-latest
 
     steps:
@@ -55,7 +58,7 @@ jobs:
         shell: bash
         run: |
           git add -A
-          git commit -m "Automated release build for version: ${{ steps.extract.outputs.version }}" || echo "No changes to commit"
+          git commit -m "Automated release build for version: ${{ steps.extract.outputs.version }}"
           git push origin ${{ github.ref }}
 
       - name: Fetch and force merge into main
