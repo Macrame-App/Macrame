@@ -1,7 +1,8 @@
 {
-  "name": "fe",
-  "version": "0.0.0",
-  "private": true,
+  "name": "Macrame - UI",
+  "description": "Macrame UI - Macrame is a small application that can turn any device into a button panel for your pc.",
+  "version": "1.0.0",
+  "private": false,
   "type": "module",
   "scripts": {
     "dev": "vite --host",
