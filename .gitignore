@@ -8,7 +8,13 @@ log.txt
 Macrame.exe
 
 public/*
+
 macros/*
+!macros/TEST-*
+
+panels/*
+!panels/test_panel
+
 builds
 node_modules
 ToDo.md

@@ -1,0 +1,9 @@
+[
+  { "code": "lcmd", "direction": "down", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "p", "direction": "down", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "lcmd", "direction": "up", "type": "key" },
+  { "type": "delay", "value": 15 },
+  { "code": "p", "direction": "up", "type": "key" }
+]
