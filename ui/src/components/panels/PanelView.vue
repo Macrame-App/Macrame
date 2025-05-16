@@ -21,36 +21,47 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <template>
   <div id="panel-view">
-    <div class="panel-preview__content" ref="panelView" v-html="viewPanel.html"></div>
+    <div class="panel-container" ref="panelContainer" v-html="viewPanel.html"></div>
   </div>
 </template>
 
 <script setup>
+import { isLocal } from '@/services/ApiService'
 import { RunMacro } from '@/services/MacroService'
 import {
+  CheckLocalPanel,
   PanelButtonListeners,
   PanelDialogListeners,
   RemovePanelScripts,
   RemovePanelStyle,
+  SavePanelToLocal,
   SetPanelStyle,
   StripPanelHTML,
 } from '@/services/PanelService'
 import { usePanelStore } from '@/stores/panel'
+import { useSettingStore } from '@/stores/settings'
 import { onMounted, onUnmounted, ref } from 'vue'
 
 const panel = usePanelStore()
+const settings = useSettingStore()
 
 const props = defineProps({
   dirname: String,
 })
 
-const panelView = ref(null)
+const panelContainer = ref(null)
 
 const viewPanel = ref({})
 
+const wakeLock = ref(null)
+
 onMounted(async () => {
+  requestWakeLock()
+
   const currentPanel = await panel.get(props.dirname)
   viewPanel.value = currentPanel
+
+  if (!isLocal() && settings.get('openLastPanel') && !CheckLocalPanel()) SavePanelToLocal()
 
   viewPanel.value.html = StripPanelHTML(viewPanel.value.html, viewPanel.value.aspectRatio)
   SetPanelStyle(viewPanel.value.style)
@@ -67,6 +78,8 @@ onMounted(async () => {
 onUnmounted(() => {
   RemovePanelStyle()
   RemovePanelScripts()
+
+  wakeLock.value.release()
 })
 
 const viewPanelListeners = () => {
@@ -74,8 +87,20 @@ const viewPanelListeners = () => {
     RunMacro(viewPanel.value.macros[button.id])
   }
 
-  PanelButtonListeners(panelView.value, callback)
-  PanelDialogListeners(panelView.value)
+  PanelButtonListeners(panelContainer.value, callback)
+  PanelDialogListeners(panelContainer.value)
+}
+
+const requestWakeLock = async () => {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock.value = await navigator.wakeLock.request('screen')
+    } else {
+      console.warn('Wake Lock API not supported')
+    }
+  } catch (err) {
+    console.error(`${err.name}, ${err.message}`)
+  }
 }
 </script>
 
@@ -88,7 +113,7 @@ const viewPanelListeners = () => {
   size-full
   bg-black;
 
-  .panel-preview__content {
+  .panel-container {
     @apply relative
       grid
       justify-center

@@ -19,6 +19,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { useNoticationStore } from '@/stores/notifications'
+
 export const SetPanelStyle = (styleStr) => {
   const styleEl = document.createElement('style')
   styleEl.setAttribute('custom_panel_style', true)
@@ -117,4 +119,33 @@ export const PanelDialogListeners = (panelEl) => {
       }
     })
   })
+}
+
+const getPanelUrl = () => {
+  const url = new URL(window.location.href)
+  return url.pathname
+}
+
+export const SavePanelToLocal = () => {
+  localStorage.setItem('last_opened_panel', getPanelUrl())
+
+  const notificationStore = useNoticationStore()
+
+  notificationStore.add({
+    message: 'Panel will be opened next launch',
+    variant: 'success',
+    time: 1000,
+  })
+}
+
+export const CheckLocalPanel = () => {
+  const localPanel = localStorage.getItem('last_opened_panel')
+
+  if (localPanel) return localPanel == getPanelUrl()
+
+  return false
+}
+
+export const GetLocalPanel = () => {
+  return localStorage.getItem('last_opened_panel')
 }
