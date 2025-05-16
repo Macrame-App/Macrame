@@ -64,7 +64,7 @@ func configFileExists() bool {
 }
 
 func CheckUIDevDir() {
-	log.Println("Checking FE dev directory...")
+	log.Println("Checking UI dev directory...")
 	_, err := os.Stat("ui")
 
 	if err != nil {
@@ -72,10 +72,10 @@ func CheckUIDevDir() {
 		return
 	}
 
-	copyConfigToFe()
+	copyConfigToUi()
 }
 
-func copyConfigToFe() {
+func copyConfigToUi() {
 	data, err := os.ReadFile(configPath)
 
 	if err != nil {
