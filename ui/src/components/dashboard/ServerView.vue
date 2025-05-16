@@ -93,8 +93,6 @@ const server = reactive({
 onMounted(async () => {
   const serverIP = await device.serverGetIP()
   server.ip = serverIP
-  // server.port = window.__CONFIG__.MCRM__PORT
-  // server.fullPath = `http://${server.ip}:${server.port}`
 
   const remoteCount = await device.serverGetRemotes(true)
   server.remoteCount = remoteCount
@@ -104,8 +102,6 @@ onMounted(async () => {
 
   const panelCount = await panel.getList(true)
   server.panelCount = panelCount
-
-  console.log(server)
 })
 </script>
 
