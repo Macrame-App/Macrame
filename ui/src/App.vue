@@ -35,19 +35,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
     <h4>Not authorized!</h4>
     <p>Click here to start authorization and open the "Devices" page on your PC.</p>
   </AlertComp>
+  <NotificationsComp />
 </template>
 
 <script setup>
 import MainMenu from '@/components/base/MainMenu.vue'
-import { onMounted, ref } from 'vue'
-import { RouterView, useRoute } from 'vue-router'
+import { onBeforeUnmount, onMounted, onUnmounted, onUpdated, ref } from 'vue'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 import { useDeviceStore } from './stores/device'
+import { useSettingStore } from './stores/settings'
 import { isLocal } from './services/ApiService'
 import AlertComp from './components/base/AlertComp.vue'
+import NotificationsComp from './components/base/NotificationsComp.vue'
+import { GetLocalPanel } from './services/PanelService'
 
 const device = useDeviceStore()
+const settings = useSettingStore()
 
 const route = useRoute()
+const router = useRouter()
 const handshake = ref(false)
 
 onMounted(() => {
@@ -55,16 +61,37 @@ onMounted(() => {
   // If not present in LocalStorage a new uuidV4 will be generated
   device.uuid()
 
-  if (!isLocal) appHandshake()
+  settings.loadSettings()
+
+  if (!isLocal) {
+    appHandshake()
+    loadLastPanel()
+  }
 
   device.$subscribe(() => {
     if (device.key()) handshake.value = true
   })
 })
 
+onUpdated(() => {
+  console.log('App updated')
+
+  // loadLastPanel()
+})
+
+onUnmounted(() => {
+  settings.saveSettings()
+})
+
 async function appHandshake() {
   const hsReq = await device.remoteHandshake()
   handshake.value = hsReq
+}
+
+function loadLastPanel() {
+  if (route.fullPath != GetLocalPanel()) {
+    router.push(GetLocalPanel())
+  }
 }
 </script>
 

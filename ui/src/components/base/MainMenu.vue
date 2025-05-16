@@ -45,6 +45,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
           <IconDevices />{{ isLocal() ? 'Devices' : 'Server' }}
         </RouterLink>
       </li>
+      <li>
+        <RouterLink @click="menuOpen = false" to="/settings"> <IconSettings />Settings </RouterLink>
+      </li>
       <!-- <li>
         <RouterLink @click="menuOpen = false" to="/settings">
           <IconSettings />Settings

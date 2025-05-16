@@ -60,11 +60,11 @@ const router = createRouter({
       name: 'devices',
       component: () => import('../views/DevicesView.vue'),
     },
-    // {
-    //   path: '/settings',
-    //   name: 'settings',
-    //   component: () => import('../views/SettingsView.vue'),
-    // },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('../views/SettingsView.vue'),
+    },
     // {
     //   path: '/about',
     //   name: 'about',
